@@ -1,0 +1,829 @@
+{
+ "settings": {
+  "boldLimit": 5,
+  "boldPoints": 5,
+  "lockAt": "2026-11-02T00:00:00Z",
+  "propPoints": 2,
+  "season": "2026–27 NBA Season"
+ },
+ "questions": [
+  {
+   "id": "champ",
+   "group": "Playoffs",
+   "hint": "The Knicks are defending the title.",
+   "kind": "team",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 10,
+   "points": 10,
+   "resolved": false,
+   "title": "NBA Champion",
+   "answers": []
+  },
+  {
+   "id": "runnerup",
+   "group": "Playoffs",
+   "kind": "team",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 20,
+   "points": 5,
+   "resolved": false,
+   "title": "Finals runner-up",
+   "answers": []
+  },
+  {
+   "id": "fmvp",
+   "group": "Playoffs",
+   "hint": "Pick from the MVP contenders or type anyone.",
+   "kind": "player",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 30,
+   "points": 5,
+   "pool": [
+    {
+     "n": "Victor Wembanyama",
+     "t": "SAS"
+    },
+    {
+     "n": "Shai Gilgeous-Alexander",
+     "t": "OKC"
+    },
+    {
+     "n": "Nikola Jokic",
+     "t": "DEN"
+    },
+    {
+     "n": "Luka Doncic",
+     "t": "LAL"
+    },
+    {
+     "n": "Giannis Antetokounmpo",
+     "t": "MIA"
+    },
+    {
+     "n": "Jayson Tatum",
+     "t": "BOS"
+    },
+    {
+     "n": "Anthony Edwards",
+     "t": "MIN"
+    },
+    {
+     "n": "Cade Cunningham",
+     "t": "DET"
+    },
+    {
+     "n": "Jalen Brunson",
+     "t": "NYK"
+    },
+    {
+     "n": "Donovan Mitchell",
+     "t": "CLE"
+    },
+    {
+     "n": "Kawhi Leonard",
+     "t": "TOR"
+    },
+    {
+     "n": "Tyrese Maxey",
+     "t": "PHI"
+    }
+   ],
+   "resolved": false,
+   "title": "Finals MVP",
+   "answers": []
+  },
+  {
+   "id": "mvp",
+   "group": "Awards",
+   "hint": "Last season: 1. Shai Gilgeous-Alexander, 2. Nikola Jokic, 3. Victor Wembanyama. Listed by this year's odds plus last year's top-8 vote getters.",
+   "kind": "player",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 40,
+   "points": 10,
+   "pool": [
+    {
+     "n": "Victor Wembanyama",
+     "t": "SAS"
+    },
+    {
+     "n": "Shai Gilgeous-Alexander",
+     "t": "OKC"
+    },
+    {
+     "n": "Nikola Jokic",
+     "t": "DEN"
+    },
+    {
+     "n": "Luka Doncic",
+     "t": "LAL"
+    },
+    {
+     "n": "Giannis Antetokounmpo",
+     "t": "MIA"
+    },
+    {
+     "n": "Jayson Tatum",
+     "t": "BOS"
+    },
+    {
+     "n": "Anthony Edwards",
+     "t": "MIN"
+    },
+    {
+     "n": "Cade Cunningham",
+     "t": "DET"
+    },
+    {
+     "n": "Jalen Brunson",
+     "t": "NYK"
+    },
+    {
+     "n": "Donovan Mitchell",
+     "t": "CLE"
+    },
+    {
+     "n": "Jaylen Brown",
+     "t": "PHI"
+    },
+    {
+     "n": "Kawhi Leonard",
+     "t": "TOR"
+    },
+    {
+     "n": "Tyrese Maxey",
+     "t": "PHI"
+    },
+    {
+     "n": "Tyrese Haliburton",
+     "t": "IND"
+    },
+    {
+     "n": "LaMelo Ball",
+     "t": "MIN"
+    },
+    {
+     "n": "Joel Embiid",
+     "t": "PHI"
+    }
+   ],
+   "resolved": false,
+   "title": "MVP",
+   "answers": []
+  },
+  {
+   "id": "roy",
+   "group": "Awards",
+   "hint": "2026 draft class only. Last season: Cooper Flagg. Listed by this year's odds.",
+   "kind": "player",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 50,
+   "points": 5,
+   "pool": [
+    {
+     "n": "Cameron Boozer",
+     "t": "MEM"
+    },
+    {
+     "n": "Caleb Wilson",
+     "t": "CHI"
+    },
+    {
+     "n": "Darryn Peterson",
+     "t": "UTA"
+    },
+    {
+     "n": "AJ Dybantsa",
+     "t": "WAS"
+    },
+    {
+     "n": "Darius Acuff Jr.",
+     "t": "SAC"
+    },
+    {
+     "n": "Yaxel Lendeborg",
+     "t": "GSW"
+    },
+    {
+     "n": "Mikel Brown Jr.",
+     "t": "BKN"
+    },
+    {
+     "n": "Keaton Wagler",
+     "t": "LAC"
+    },
+    {
+     "n": "Aday Mara",
+     "t": "OKC"
+    },
+    {
+     "n": "Nate Ament",
+     "t": "MIL"
+    },
+    {
+     "n": "Kingston Flemings",
+     "t": "ATL"
+    },
+    {
+     "n": "Brayden Burries",
+     "t": "MIL"
+    },
+    {
+     "n": "Morez Johnson Jr.",
+     "t": "DAL"
+    },
+    {
+     "n": "Cameron Carr",
+     "t": "LAL"
+    },
+    {
+     "n": "Sergio De Larrea",
+     "t": "DAL"
+    },
+    {
+     "n": "Koa Peat",
+     "t": "DAL"
+    }
+   ],
+   "resolved": false,
+   "title": "Rookie of the Year",
+   "answers": []
+  },
+  {
+   "id": "dpoy",
+   "group": "Awards",
+   "hint": "Last season: Victor Wembanyama. Finalists: Chet Holmgren, Ausar Thompson.",
+   "kind": "player",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 60,
+   "points": 5,
+   "pool": [
+    {
+     "n": "Victor Wembanyama",
+     "t": "SAS"
+    },
+    {
+     "n": "Chet Holmgren",
+     "t": "OKC"
+    },
+    {
+     "n": "Ausar Thompson",
+     "t": "DET"
+    },
+    {
+     "n": "Scottie Barnes",
+     "t": "TOR"
+    },
+    {
+     "n": "Evan Mobley",
+     "t": "CLE"
+    },
+    {
+     "n": "Bam Adebayo",
+     "t": "MIA"
+    },
+    {
+     "n": "Jaren Jackson Jr.",
+     "t": "UTA"
+    },
+    {
+     "n": "Rudy Gobert",
+     "t": "MIN"
+    },
+    {
+     "n": "Amen Thompson",
+     "t": "HOU"
+    },
+    {
+     "n": "Walker Kessler",
+     "t": "LAL"
+    },
+    {
+     "n": "Collin Murray-Boyles",
+     "t": "TOR"
+    },
+    {
+     "n": "Dyson Daniels",
+     "t": "ATL"
+    }
+   ],
+   "resolved": false,
+   "title": "Defensive Player of the Year",
+   "answers": []
+  },
+  {
+   "id": "smoy",
+   "group": "Awards",
+   "hint": "Last season: Keldon Johnson. Finalists: Jaime Jaquez Jr., Tim Hardaway Jr. Plus this year's expected bench stars.",
+   "kind": "player",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 70,
+   "points": 5,
+   "pool": [
+    {
+     "n": "Payton Pritchard",
+     "t": "BOS"
+    },
+    {
+     "n": "Ajay Mitchell",
+     "t": "OKC"
+    },
+    {
+     "n": "Dylan Harper",
+     "t": "SAS"
+    },
+    {
+     "n": "Ayo Dosunmu",
+     "t": "MIN"
+    },
+    {
+     "n": "DeMar DeRozan",
+     "t": "DEN"
+    },
+    {
+     "n": "Anfernee Simons",
+     "t": "PHI"
+    },
+    {
+     "n": "Isaiah Joe",
+     "t": "DET"
+    },
+    {
+     "n": "Collin Sexton",
+     "t": "LAL"
+    },
+    {
+     "n": "Anthony Black",
+     "t": "ORL"
+    },
+    {
+     "n": "Reed Sheppard",
+     "t": "HOU"
+    },
+    {
+     "n": "Jaime Jaquez Jr.",
+     "t": "MIA"
+    },
+    {
+     "n": "Tim Hardaway Jr.",
+     "t": "MIA"
+    },
+    {
+     "n": "Keldon Johnson",
+     "t": "SAS"
+    }
+   ],
+   "resolved": false,
+   "title": "Sixth Man of the Year",
+   "answers": []
+  },
+  {
+   "id": "mip",
+   "group": "Awards",
+   "hint": "Last season's winner, Nickeil Alexander-Walker, is left off. Finalists Jalen Duren and Deni Avdija are still waiting on theirs.",
+   "kind": "player",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 80,
+   "points": 5,
+   "pool": [
+    {
+     "n": "Dylan Harper",
+     "t": "SAS"
+    },
+    {
+     "n": "Brandon Miller",
+     "t": "CHA"
+    },
+    {
+     "n": "Payton Pritchard",
+     "t": "BOS"
+    },
+    {
+     "n": "Ausar Thompson",
+     "t": "DET"
+    },
+    {
+     "n": "Jalen Duren",
+     "t": "DET"
+    },
+    {
+     "n": "Deni Avdija",
+     "t": "POR"
+    },
+    {
+     "n": "Cason Wallace",
+     "t": "OKC"
+    },
+    {
+     "n": "Ajay Mitchell",
+     "t": "OKC"
+    },
+    {
+     "n": "Walker Kessler",
+     "t": "LAL"
+    },
+    {
+     "n": "Matas Buzelis",
+     "t": "CHI"
+    },
+    {
+     "n": "Zach Edey",
+     "t": "MEM"
+    },
+    {
+     "n": "Cedric Coward",
+     "t": "MEM"
+    },
+    {
+     "n": "Kel'el Ware",
+     "t": "MIL"
+    },
+    {
+     "n": "Jaden McDaniels",
+     "t": "MIN"
+    },
+    {
+     "n": "Egor Demin",
+     "t": "BKN"
+    },
+    {
+     "n": "Collin Murray-Boyles",
+     "t": "TOR"
+    },
+    {
+     "n": "Khaman Maluach",
+     "t": "PHX"
+    },
+    {
+     "n": "Anthony Black",
+     "t": "ORL"
+    }
+   ],
+   "resolved": false,
+   "title": "Most Improved Player",
+   "answers": []
+  },
+  {
+   "id": "clutch",
+   "group": "Awards",
+   "hint": "Last season: Shai Gilgeous-Alexander. Finalists: Jamal Murray, Anthony Edwards. Jalen Brunson is this year's favorite.",
+   "kind": "player",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 85,
+   "points": 3,
+   "pool": [
+    {
+     "n": "Jalen Brunson",
+     "t": "NYK"
+    },
+    {
+     "n": "Shai Gilgeous-Alexander",
+     "t": "OKC"
+    },
+    {
+     "n": "Anthony Edwards",
+     "t": "MIN"
+    },
+    {
+     "n": "Jamal Murray",
+     "t": "DEN"
+    },
+    {
+     "n": "Nikola Jokic",
+     "t": "DEN"
+    },
+    {
+     "n": "Luka Doncic",
+     "t": "LAL"
+    },
+    {
+     "n": "Cade Cunningham",
+     "t": "DET"
+    },
+    {
+     "n": "Tyrese Maxey",
+     "t": "PHI"
+    },
+    {
+     "n": "Donovan Mitchell",
+     "t": "CLE"
+    },
+    {
+     "n": "Kawhi Leonard",
+     "t": "TOR"
+    },
+    {
+     "n": "De'Aaron Fox",
+     "t": "SAS"
+    },
+    {
+     "n": "Victor Wembanyama",
+     "t": "SAS"
+    }
+   ],
+   "resolved": false,
+   "title": "Clutch Player of the Year",
+   "answers": []
+  },
+  {
+   "id": "coy",
+   "group": "Awards",
+   "hint": "Usually goes to a coach whose team wins big or beats expectations into the playoffs. Last season: Joe Mazzulla, then J.B. Bickerstaff and Mitch Johnson. The rest got big roster boosts this summer.",
+   "kind": "text",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 90,
+   "points": 3,
+   "pool": [
+    {
+     "n": "Darko Rajakovic",
+     "t": "TOR"
+    },
+    {
+     "n": "Will Hardy",
+     "t": "UTA"
+    },
+    {
+     "n": "Nick Nurse",
+     "t": "PHI"
+    },
+    {
+     "n": "Erik Spoelstra",
+     "t": "MIA"
+    },
+    {
+     "n": "Chris Finch",
+     "t": "MIN"
+    },
+    {
+     "n": "Rick Carlisle",
+     "t": "IND"
+    },
+    {
+     "n": "Sean Sweeney",
+     "t": "ORL"
+    },
+    {
+     "n": "Dusty May",
+     "t": "DAL"
+    },
+    {
+     "n": "Ime Udoka",
+     "t": "HOU"
+    },
+    {
+     "n": "Brian Keefe",
+     "t": "WAS"
+    },
+    {
+     "n": "Mitch Johnson",
+     "t": "SAS"
+    },
+    {
+     "n": "Mike Brown",
+     "t": "NYK"
+    },
+    {
+     "n": "Mark Daigneault",
+     "t": "OKC"
+    },
+    {
+     "n": "J.J. Redick",
+     "t": "LAL"
+    },
+    {
+     "n": "J.B. Bickerstaff",
+     "t": "DET"
+    },
+    {
+     "n": "Joe Mazzulla",
+     "t": "BOS"
+    }
+   ],
+   "resolved": false,
+   "title": "Coach of the Year",
+   "answers": []
+  },
+  {
+   "id": "worst",
+   "group": "Extras",
+   "kind": "team",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 120,
+   "points": 5,
+   "resolved": false,
+   "title": "Worst record in the league",
+   "answers": []
+  },
+  {
+   "id": "topwins",
+   "group": "Extras",
+   "kind": "number",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 130,
+   "points": 5,
+   "resolved": false,
+   "title": "Wins for the league's best team",
+   "answers": []
+  },
+  {
+   "id": "cup",
+   "group": "Extras",
+   "hint": "Final is Dec 11 in Indianapolis.",
+   "kind": "team",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 140,
+   "points": 3,
+   "resolved": false,
+   "title": "NBA Cup winner",
+   "answers": []
+  },
+  {
+   "id": "fired",
+   "group": "Extras",
+   "kind": "text",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 150,
+   "points": 3,
+   "resolved": false,
+   "title": "First head coach fired",
+   "answers": []
+  },
+  {
+   "id": "heatwins",
+   "group": "Extras",
+   "kind": "number",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 160,
+   "points": 3,
+   "resolved": false,
+   "title": "Heat wins in Giannis' first season",
+   "answers": []
+  },
+  {
+   "id": "sixersecf",
+   "group": "Extras",
+   "kind": "choice",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "order": 170,
+   "points": 3,
+   "resolved": false,
+   "title": "Do LeBron and Jaylen take the 76ers to the conference finals?",
+   "answers": []
+  }
+ ],
+ "props": [
+  {
+   "id": "p01",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 1,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "Nikola Jokic leads the league in points, rebounds and assists"
+  },
+  {
+   "id": "p02",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 2,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "Rudy Gobert breaks Wilt Chamberlain's record for best single-season field goal percentage"
+  },
+  {
+   "id": "p03",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 3,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "Cooper Flagg makes an All-NBA team"
+  },
+  {
+   "id": "p04",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 4,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "Darryn Peterson makes the All-Star team as a rookie"
+  },
+  {
+   "id": "p05",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 5,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "AJ Dybantsa is not a Rookie of the Year finalist"
+  },
+  {
+   "id": "p06",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 6,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "The Raptors make the NBA Finals"
+  },
+  {
+   "id": "p07",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 7,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "The defending champion Knicks don't get home court in the first round"
+  },
+  {
+   "id": "p08",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 8,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "The Celtics finish with the best offense in the league"
+  },
+  {
+   "id": "p09",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 9,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "The Kings finish with the worst defense in the league"
+  },
+  {
+   "id": "p10",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 10,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "The Lakers have a top 10 defense"
+  },
+  {
+   "id": "p11",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 11,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "The Rockets reach the conference finals"
+  },
+  {
+   "id": "p12",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 12,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "Paul George makes the All-Star team and Jaylen Brown doesn't"
+  },
+  {
+   "id": "p13",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 13,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "The Nets make the play-in tournament"
+  },
+  {
+   "id": "p14",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 14,
+   "result": "",
+   "source": "The Ringer's bold predictions",
+   "text": "Ty Lue ends up coaching the 76ers"
+  },
+  {
+   "id": "p15",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 15,
+   "result": "",
+   "source": "",
+   "text": "Wembanyama wins MVP and Defensive Player of the Year in the same season"
+  },
+  {
+   "id": "p16",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 16,
+   "result": "",
+   "source": "",
+   "text": "Giannis plays 65 or more games in his first season with the Heat"
+  },
+  {
+   "id": "p17",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 17,
+   "result": "",
+   "source": "",
+   "text": "LeBron announces this is his final season"
+  },
+  {
+   "id": "p18",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "order": 18,
+   "result": "",
+   "source": "",
+   "text": "Someone scores 60 or more in a game this season"
+  }
+ ],
+ "results": {
+  "east": [],
+  "west": [],
+  "final": false
+ },
+ "grades": {}
+}

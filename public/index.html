@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Called It</title>
+<meta name="description" content="Make your NBA season calls. Rank both conferences, pick the awards, vote Real or Cap, and see who called it.">
+<meta property="og:title" content="Called It">
+<meta property="og:description" content="Make your NBA season calls and see who was right all year.">
+<meta name="theme-color" content="#0e1838">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%230e1838%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2218%22 fill=%22%23e8601c%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: navy arena band on top (title, lock clock, tabs, a stripe of all 30 team colors),
+   then one 820px column. Picks run as steps: East 1 to 15, West 1 to 15, Awards, Playoffs, Extras. */
+:root{
+  --bg:#f3f4f7; --surface:#ffffff; --surface-2:#e9ecf2; --ink:#0f1730; --ink-2:#5a6480; --line:#dde1ea;
+  --band:#0e1838; --band-ink:#ffffff; --band-2:#9fb0d9;
+  --accent:#e8601c; --accent-ink:#ffffff; --accent-soft:#fde7da;
+  --hit:#1f7a45; --hit-soft:#dff2e6; --miss:#b4232c; --miss-soft:#f9e0e1; --wait:#8a5a00; --wait-soft:#fbefd2; --info:#1d4f91; --info-soft:#e1ebf8;
+  --display:"Anton", Impact, "Arial Narrow", sans-serif;
+  --body:"DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r-sm:6px; --r-md:10px; --r-lg:16px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0a0f1f; --surface:#121a30; --surface-2:#1a2340; --ink:#eef1f8; --ink-2:#a3aecb; --line:#26304f;
+  --band:#060b1a; --band-ink:#ffffff; --band-2:#8e9cc4;
+  --accent:#ff7a33; --accent-ink:#130a04; --accent-soft:#3a1d0d;
+  --hit:#6fd39a; --hit-soft:#14331f; --miss:#ff8a8f; --miss-soft:#3a1517; --wait:#f1c565; --wait-soft:#33280f; --info:#8fb6ee; --info-soft:#15243d; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0a0f1f; --surface:#121a30; --surface-2:#1a2340; --ink:#eef1f8; --ink-2:#a3aecb; --line:#26304f;
+  --band:#060b1a; --band-ink:#ffffff; --band-2:#8e9cc4;
+  --accent:#ff7a33; --accent-ink:#130a04; --accent-soft:#3a1d0d;
+  --hit:#6fd39a; --hit-soft:#14331f; --miss:#ff8a8f; --miss-soft:#3a1517; --wait:#f1c565; --wait-soft:#33280f; --info:#8fb6ee; --info-soft:#15243d; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.5}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--band)}
+.wrap{max-width:820px; margin:0 auto; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,select,textarea{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+/* arena band */
+header.top{position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--band); color:var(--band-ink)}
+.top .wrap{padding-block:18px 0}
+.titlerow{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:4px 16px}
+.eyebrow{font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent)}
+h1{font-family:var(--display); font-weight:400; font-size:clamp(40px,8vw,60px); line-height:.95; margin:2px 0 0; letter-spacing:.01em; text-transform:uppercase}
+.clock{font-size:14px; color:var(--band-2); text-align:right}
+.clock strong{display:block; color:var(--band-ink); font-weight:700}
+.tabs{display:flex; gap:2px; margin-top:14px; overflow-x:auto; scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{appearance:none; border:0; background:none; padding:10px 12px 12px; min-height:44px; font-weight:700; font-size:15px; color:var(--band-2); border-bottom:3px solid transparent; cursor:pointer; white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--band-ink); border-bottom-color:var(--accent)}
+.tab:hover{color:var(--band-ink)}
+.stripe{display:flex; height:6px}
+.stripe span{flex:1}
+
+main .wrap{padding-block:24px 96px; display:flex; flex-direction:column; gap:28px}
+h2{font-family:var(--display); font-weight:400; font-size:30px; line-height:1.1; margin:0; text-transform:uppercase; letter-spacing:.01em; text-wrap:balance}
+h3{font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-2); margin:0}
+.lede{color:var(--ink-2); margin:4px 0 0; max-width:62ch}
+.section{display:flex; flex-direction:column; gap:14px}
+.sectionhead{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:8px 16px}
+
+/* step chips */
+.steps{display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; scrollbar-width:thin}
+.step{appearance:none; flex:none; display:flex; align-items:center; gap:8px; border:1px solid var(--line); background:var(--surface); border-radius:999px; min-height:40px; padding:4px 14px 4px 6px; font-weight:700; font-size:14px; cursor:pointer}
+.step .dot{width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font-size:12px; background:var(--surface-2); color:var(--ink-2)}
+.step.done .dot{background:var(--hit); color:var(--surface)}
+.step[aria-current="true"]{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-soft)}
+
+/* team badges */
+.badge{--tb:#333; --ta:#999; display:inline-grid; place-items:center; background:var(--tb); color:#fff; border-bottom:4px solid var(--ta); border-radius:8px; font-family:var(--display); letter-spacing:.04em; line-height:1; flex:none}
+.badge.sm{width:44px; height:34px; font-size:16px}
+.badge.xs{width:38px; height:26px; font-size:13px; border-bottom-width:3px; border-radius:6px}
+.badge.lg{width:100%; height:48px; font-size:22px}
+.pool{display:grid; grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:10px}
+.tbtn{appearance:none; border:2px solid transparent; background:var(--surface); border-radius:12px; padding:6px 6px 8px; display:flex; flex-direction:column; gap:6px; align-items:stretch; cursor:pointer; text-align:center; box-shadow:0 1px 0 var(--line)}
+.tbtn:hover{border-color:var(--line)}
+.tbtn .nick{font-size:12px; font-weight:700; color:var(--ink-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.tbtn.on{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+.tbtn:disabled{cursor:default}
+
+/* ranking board */
+.board{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:start}
+@media (max-width:700px){ .board{grid-template-columns:1fr} }
+.ranks{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px}
+.tier{font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-2); padding:6px 0 0; display:flex; align-items:center; gap:8px}
+.tier::after{content:""; flex:1; height:1px; background:var(--line)}
+.rk{display:grid; grid-template-columns:34px 44px minmax(0,1fr) auto; gap:10px; align-items:center; background:var(--surface); border-radius:10px; padding:6px 8px 6px 4px; min-height:48px}
+.rk .seed{font-family:var(--display); font-size:22px; text-align:center; color:var(--ink-2)}
+.rk .tname{font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.rk.empty{background:transparent; border:1px dashed var(--line)}
+.rk.empty .tname{font-weight:500; color:var(--ink-2)}
+.rk.next{border-color:var(--accent)}
+.rk-act{display:flex; gap:2px}
+.ib{appearance:none; border:0; background:var(--surface-2); color:var(--ink-2); width:34px; height:34px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:700}
+.ib:hover{color:var(--ink)}
+.ib:disabled{opacity:.35; cursor:default}
+
+/* question rows */
+.list{display:flex; flex-direction:column; gap:12px}
+.qcard{background:var(--surface); border-radius:var(--r-lg); padding:16px; display:flex; flex-direction:column; gap:12px}
+.qhead{display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px 12px; align-items:baseline}
+.q-title{font-weight:700; font-size:18px}
+.q-meta{font-size:13px; color:var(--ink-2); display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center}
+.hint{font-size:14px; color:var(--ink-2)}
+.seg{display:flex; flex-wrap:wrap; gap:8px}
+.segb{appearance:none; border:2px solid var(--line); background:var(--surface); border-radius:999px; min-height:44px; padding:6px 20px; font-weight:700; cursor:pointer}
+.segb.on{border-color:var(--accent); background:var(--accent-soft); color:var(--accent)}
+.mypick{display:flex; align-items:center; gap:10px; font-weight:700}
+.mypick small{font-weight:500; color:var(--ink-2)}
+
+input[type=text],input[type=email],input[type=number],input[type=datetime-local],select,textarea{
+  width:100%; min-height:44px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--r-md); background:var(--surface); }
+.qcard input[type=text],.qcard input[type=number]{background:var(--bg); max-width:420px}
+input:focus,select:focus,textarea:focus{border-color:var(--accent); outline:none; box-shadow:0 0 0 3px var(--accent-soft)}
+textarea{resize:vertical; min-height:88px; line-height:1.45}
+label.f{display:flex; flex-direction:column; gap:4px; font-size:13px; font-weight:700; color:var(--ink-2); min-width:0}
+
+.btn{appearance:none; border:1px solid var(--line); background:var(--surface); border-radius:var(--r-md); min-height:44px; padding:8px 18px; font-weight:700; cursor:pointer; white-space:nowrap}
+.btn:hover{border-color:var(--ink-2)}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.small{min-height:36px; padding:4px 12px; font-size:14px}
+.btn.danger{color:var(--miss)}
+.btn.danger.armed{background:var(--miss); border-color:var(--miss); color:var(--surface)}
+.btn:disabled{opacity:.5; cursor:not-allowed}
+.nextbar{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; padding-top:4px}
+
+.pill{display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; letter-spacing:.02em; padding:2px 9px; border-radius:999px; white-space:nowrap}
+.pill.open{background:var(--info-soft); color:var(--info)}
+.pill.lock{background:var(--surface-2); color:var(--ink-2)}
+.pill.hit{background:var(--hit-soft); color:var(--hit)}
+.pill.miss{background:var(--miss-soft); color:var(--miss)}
+.pill.wait{background:var(--wait-soft); color:var(--wait)}
+.pill.pts{background:var(--accent-soft); color:var(--accent)}
+
+.panel{background:var(--surface); border-radius:var(--r-lg); padding:20px; display:flex; flex-direction:column; gap:16px}
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px}
+.actions{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.empty{border:1px dashed var(--line); border-radius:var(--r-lg); padding:32px 20px; text-align:center; color:var(--ink-2)}
+.empty strong{display:block; color:var(--ink); font-family:var(--display); font-weight:400; text-transform:uppercase; font-size:22px; margin-bottom:4px}
+.notice{background:var(--wait-soft); color:var(--ink); border-radius:var(--r-md); padding:12px 16px; font-size:14px}
+
+.av{width:28px; height:28px; border-radius:50%; flex:none; object-fit:cover; background:var(--surface-2); display:inline-block}
+.who{display:inline-flex; align-items:center; gap:8px; min-width:0}
+.who span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+
+.tablewrap{overflow-x:auto; background:var(--surface); border-radius:var(--r-lg)}
+table{width:100%; border-collapse:collapse; font-size:15px}
+th{font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-2); font-weight:700; text-align:left; padding:10px; border-bottom:1px solid var(--line); white-space:nowrap}
+td{padding:10px; border-bottom:1px solid var(--line); vertical-align:middle}
+tr:last-child td{border-bottom:0}
+th.n,td.n{text-align:right; font-variant-numeric:tabular-nums}
+td.rank{width:40px; font-family:var(--display); font-size:20px; color:var(--ink-2)}
+td.pts{font-family:var(--display); font-size:26px; color:var(--accent)}
+tr.me td{background:var(--accent-soft)}
+.cmp td{padding:6px 10px}
+.cmp td.cell{min-width:120px}
+.cmpcell{display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600}
+.cmpcell.hit{color:var(--hit)} .cmpcell.miss{color:var(--miss)}
+tr.tierline td{padding:4px 10px; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-2); background:var(--bg)}
+
+.call{background:var(--surface); border-radius:var(--r-lg); padding:16px; display:flex; flex-direction:column; gap:10px}
+.call-text{font-size:19px; line-height:1.35; font-weight:700}
+.call-meta{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; font-size:13px; color:var(--ink-2)}
+.react{appearance:none; border:1px solid var(--line); background:var(--surface); border-radius:999px; min-height:32px; padding:2px 12px; font-size:13px; font-weight:700; cursor:pointer}
+.react.on{border-color:var(--accent); background:var(--accent-soft); color:var(--accent)}
+.react:disabled{cursor:default; opacity:.6}
+.split{display:flex; height:10px; border-radius:999px; overflow:hidden; background:var(--surface-2)}
+.split .r{background:var(--hit)} .split .c{background:var(--miss)}
+.splitlbl{display:flex; justify-content:space-between; font-size:13px; font-weight:700}
+.splitlbl .r{color:var(--hit)} .splitlbl .c{color:var(--miss)}
+.votes{display:flex; gap:8px; flex-wrap:wrap}
+.vbtn{appearance:none; flex:1; min-width:120px; min-height:44px; border:2px solid var(--line); background:var(--surface); border-radius:var(--r-md); font-weight:700; cursor:pointer}
+.vbtn.real.on{border-color:var(--hit); background:var(--hit-soft); color:var(--hit)}
+.vbtn.cap.on{border-color:var(--miss); background:var(--miss-soft); color:var(--miss)}
+.vbtn:disabled{cursor:default; opacity:.6}
+.vbtn.on:disabled{opacity:1}
+.src{font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent)}
+.cands{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px}
+.cand{appearance:none; display:flex; align-items:center; gap:10px; min-height:48px; padding:6px 10px 6px 6px; border:2px solid var(--line); background:var(--bg); border-radius:var(--r-md); cursor:pointer; text-align:left; font-weight:700; font-size:15px; min-width:0}
+.cand span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.cand:hover{border-color:var(--ink-2)}
+.cand.on{border-color:var(--accent); background:var(--accent-soft)}
+.cand .badge.xs.blank{background:var(--surface-2); border-bottom-color:var(--line)}
+.other{display:flex; flex-direction:column; gap:4px; font-size:13px; font-weight:700; color:var(--ink-2)}
+.av.ini{display:inline-grid; place-items:center; color:#fff; font-size:12px; font-weight:700}
+.acct{display:flex; flex-wrap:wrap; gap:4px 10px; justify-content:flex-end; font-size:13px; color:var(--band-2); margin-top:4px}
+.linkbtn{appearance:none; border:0; background:none; color:var(--band-ink); font-weight:700; text-decoration:underline; cursor:pointer; padding:0; font-size:13px}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip{appearance:none; border:1px solid var(--line); background:var(--bg); border-radius:999px; min-height:36px; padding:4px 12px; font-size:14px; cursor:pointer}
+.chip.on{background:var(--hit-soft); border-color:var(--hit); color:var(--hit); font-weight:700}
+.check{display:flex; gap:8px; align-items:center; font-weight:700; min-height:44px; cursor:pointer}
+.check input{width:20px; height:20px; accent-color:var(--hit)}
+.toast{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(16px + env(safe-area-inset-bottom,0px)); background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:var(--r-md); font-size:14px; font-weight:700; z-index:20; max-width:calc(100% - 32px)}
+.status{font-size:13px; color:var(--ink-2)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="titlerow">
+      <div><div class="eyebrow" id="season">NBA season</div><h1>Called It</h1></div>
+      <div><div class="clock" id="clock">Loading…</div><div class="acct" id="acct"></div></div>
+    </div>
+    <nav class="tabs" role="tablist" id="tabs"></nav>
+  </div>
+  <div class="stripe" id="stripe" aria-hidden="true"></div>
+</header>
+<main><div class="wrap" id="view">
+  <div class="empty"><strong>Warming up</strong>Your picks, the leaderboard and everyone's calls load in a moment.</div>
+</div></main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* abbr, city, nickname, conference, primary, accent */
+const TEAMS=[
+["ATL","Atlanta","Hawks","E","#C8102E","#C1D32F"],["BOS","Boston","Celtics","E","#007A33","#BA9653"],["BKN","Brooklyn","Nets","E","#000000","#9a9a9a"],
+["CHA","Charlotte","Hornets","E","#1D1160","#00788C"],["CHI","Chicago","Bulls","E","#CE1141","#000000"],["CLE","Cleveland","Cavaliers","E","#860038","#FDBB30"],
+["DET","Detroit","Pistons","E","#C8102E","#1D42BA"],["IND","Indiana","Pacers","E","#002D62","#FDBB30"],["MIA","Miami","Heat","E","#98002E","#F9A01B"],
+["MIL","Milwaukee","Bucks","E","#00471B","#EEE1C6"],["NYK","New York","Knicks","E","#006BB6","#F58426"],["ORL","Orlando","Magic","E","#0077C0","#C4CED4"],
+["PHI","Philadelphia","76ers","E","#006BB6","#ED174C"],["TOR","Toronto","Raptors","E","#CE1141","#000000"],["WAS","Washington","Wizards","E","#002B5C","#E31837"],
+["DAL","Dallas","Mavericks","W","#00538C","#B8C4CA"],["DEN","Denver","Nuggets","W","#0E2240","#FEC524"],["GSW","Golden State","Warriors","W","#1D428A","#FFC72C"],
+["HOU","Houston","Rockets","W","#CE1141","#C4CED4"],["LAC","LA","Clippers","W","#C8102E","#1D428A"],["LAL","Los Angeles","Lakers","W","#552583","#FDB927"],
+["MEM","Memphis","Grizzlies","W","#5D76A9","#12173F"],["MIN","Minnesota","Timberwolves","W","#0C2340","#78BE20"],["NOP","New Orleans","Pelicans","W","#0C2340","#85714D"],
+["OKC","Oklahoma City","Thunder","W","#007AC1","#EF3B24"],["PHX","Phoenix","Suns","W","#1D1160","#E56020"],["POR","Portland","Trail Blazers","W","#C8102E","#000000"],
+["SAC","Sacramento","Kings","W","#5A2D81","#63727A"],["SAS","San Antonio","Spurs","W","#000000","#C4CED4"],["UTA","Utah","Jazz","W","#002B5C","#F9A01B"]];
+const T=Object.fromEntries(TEAMS.map(t=>[t[0],{abbr:t[0],city:t[1],nick:t[2],conf:t[3],bg:t[4],ac:t[5]}]));
+const PLAYERS=["Victor Wembanyama","Nikola Jokic","Shai Gilgeous-Alexander","Luka Doncic","Giannis Antetokounmpo","Anthony Edwards","Jayson Tatum","Cade Cunningham","Cooper Flagg","Tyrese Maxey","Jalen Brunson","Donovan Mitchell","Kawhi Leonard","Scottie Barnes","Paolo Banchero","Franz Wagner","Evan Mobley","Chet Holmgren","Jalen Williams","Amen Thompson","Alperen Sengun","Kevin Durant","LeBron James","Jaylen Brown","Joel Embiid","Trae Young","Anthony Davis","Darryn Peterson","AJ Dybantsa","Cam Boozer","Caleb Wilson","Brayden Burries","Yaxel Lendeborg","Mikel Brown Jr.","Darius Acuff Jr.","Dylan Harper","Stephon Castle","De'Aaron Fox","Kon Knueppel","VJ Edgecombe","Keyonte George","Lauri Markkanen","Jaren Jackson Jr.","Rudy Gobert","Bam Adebayo","Paul George","Payton Pritchard","Derrick White","Collin Murray-Boyles","Josh Giddey","Tyrese Haliburton","Jalen Duren","Ausar Thompson","Desmond Bane","LaMelo Ball","Austin Reaves","Walker Kessler","Karl-Anthony Towns","OG Anunoby","Julius Randle","Michael Porter Jr.","Egor Demin","Zach LaVine","Domantas Sabonis","Malik Monk","Jamal Murray","Aaron Gordon","Mitchell Robinson","Reed Sheppard","Jabari Smith Jr.","Fred VanVleet","Marcus Smart","Tari Eason","Naz Reid","Immanuel Quickley","Anthony Black","Brandon Miller","Matas Buzelis"];
+const KINDS={team:"Team",player:"Player",text:"Free text",number:"Number (closest wins)",choice:"Multiple choice"};
+const CONF={E:"East",W:"West"};
+const BOLD_EDIT_MS=15*60*1000;
+
+const S={me:null,isOwner:false,status:"connecting",propCounts:{},serverVotes:{},linkSent:"",questions:[],props:[],entries:{},settings:{},grades:{},results:{east:[],west:[],final:false},
+  myEntry:{name:"",picks:{},bold:[],reacts:{},votes:{}},people:{},tab:"picks",step:"east",cmp:"east",readOnly:false,armed:null};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=s=>String(s??"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+const clone=o=>JSON.parse(JSON.stringify(o??{}));
+const settings=()=>Object.assign({season:"2026–27 NBA Season",boldLimit:5,boldPoints:5,propPoints:2,lockAt:"2026-10-20T23:00:00Z"},S.settings);
+const isLocked=q=>!!q.lockAt&&Date.now()>=Date.parse(q.lockAt);
+const standLocked=()=>Date.now()>=Date.parse(settings().lockAt);
+const has=v=>v!==undefined&&v!==null&&v!=="";
+const fmt=iso=>{try{return new Date(iso).toLocaleString([],{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}catch(e){return iso}};
+const fmtDay=iso=>{try{return new Date(iso).toLocaleDateString([],{month:"short",day:"numeric"})}catch(e){return ""}};
+function rel(ms){const m=Math.max(0,Math.round(ms/60000)),d=Math.floor(m/1440),h=Math.floor(m%1440/60),mm=m%60;return d?`${d}d ${h}h`:h?`${h}h ${mm}m`:`${mm}m`}
+function toLocalInput(iso){if(!iso)return"";const d=new Date(iso);const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`}
+function fromLocalInput(v){const d=new Date(v);return isNaN(d)?null:d.toISOString()}
+function badge(ab,size="sm"){const t=T[ab];if(!t)return `<span class="badge ${size}" style="--tb:var(--surface-2);--ta:var(--line);color:var(--ink-2)">?</span>`;return `<span class="badge ${size}" style="--tb:${t.bg};--ta:${t.ac}" title="${esc(t.city+" "+t.nick)}">${t.abbr}</span>`}
+function teamName(ab){const t=T[ab];return t?`${t.city} ${t.nick}`:String(ab)}
+function poolTeam(q,v){const p=(q.pool||[]).find(x=>norm(x.n)===norm(v));return p&&p.t?p.t:null}
+function pickBadge(q,v){if(q.kind==="team")return badge(v,"xs");const t=poolTeam(q,v);return t?badge(t,"xs"):""}
+function label(q,v){if(!has(v))return"";return q.kind==="team"?teamName(v):String(v)}
+function nm(id){const e=S.entries[id]||(id===S.me?S.myEntry:null);return (e&&e.name)||(id===S.me?"You":"Player")}
+function first(id){return nm(id).split(" ")[0]}
+function av(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;const t=TEAMS[h%30];return `<span class="av ini" style="background:${t[4]}" aria-hidden="true">${esc(nm(id).replace(/^@/,"").slice(0,1).toUpperCase())}</span>`}
+function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2600)}
+function errMsg(e){const c=e&&e.code;if(c==="invalid_argument")return"You don't have permission to change that.";if(c==="quota_exceeded")return"The league's storage is full.";return"That didn't save. Check your connection and try again."}
+$("stripe").innerHTML=TEAMS.map(t=>`<span style="background:${t[4]}"></span>`).join("");
+
+/* ---------- scoring ---------- */
+function standPts(pred,actual){if(!Array.isArray(pred)||!Array.isArray(actual)||actual.length<15)return 0;let p=0;pred.forEach((t,i)=>{const j=actual.indexOf(t);if(j<0)return;const d=Math.abs(i-j);p+=d===0?3:d===1?1:0});return p}
+function rowPts(i,t,actual){const j=actual.indexOf(t);if(j<0)return null;const d=Math.abs(i-j);return d===0?3:d===1?1:0}
+function qResult(q,id){
+  if(!q.resolved)return null;const v=((S.entries[id]||{}).picks||{})[q.id];if(!has(v))return"none";
+  if(q.kind==="number"){const ans=Number((q.answers||[])[0]);const diffs=Object.values(S.entries).map(e=>Math.abs(Number((e.picks||{})[q.id])-ans)).filter(isFinite);return Math.abs(Number(v)-ans)===Math.min(...diffs)?"hit":"miss"}
+  return new Set((q.answers||[]).map(norm)).has(norm(v))?"hit":"miss";
+}
+function score(){
+  const st=settings();const out=[];
+  for(const [id,e] of Object.entries(S.entries)){
+    const p=e.picks||{};const r={id,stand:0,qpts:0,correct:0,graded:0,boldHits:0,made:0};
+    if(S.results.final){r.stand=standPts(p.east,S.results.east)+standPts(p.west,S.results.west)}
+    r.made=(Array.isArray(p.east)?p.east.length:0)+(Array.isArray(p.west)?p.west.length:0)+S.questions.filter(q=>has(p[q.id])).length;
+    for(const q of S.questions){const res=qResult(q,id);if(res==="hit"){r.qpts+=Number(q.points)||0;r.correct++}if(res==="hit"||res==="miss")r.graded++}
+    for(const b of (e.bold||[]))if(S.grades[id+":"+b.id]==="hit")r.boldHits++;
+    r.votesRight=0;r.votesGraded=0;
+    for(const pr of S.props){if(pr.result!=="hit"&&pr.result!=="miss")continue;const v=(e.votes||{})[pr.id];if(!v)continue;r.votesGraded++;if((v==="real")===(pr.result==="hit"))r.votesRight++}
+    r.total=r.stand+r.qpts+r.boldHits*(Number(st.boldPoints)||0)+r.votesRight*(Number(st.propPoints)||0);out.push(r);
+  }
+  return out.sort((a,b)=>b.total-a.total||b.correct-a.correct||b.made-a.made);
+}
+
+/* ---------- saving ---------- */
+let saveTimer=null,saving=null,dirty=false;
+function queueSave(delay=500){dirty=true;clearTimeout(saveTimer);saveTimer=setTimeout(flush,delay);setStatus("Saving…")}
+async function flush(){
+  if(saving)await saving;if(!dirty||!S.me)return;dirty=false;
+  saving=api("/api/entry",{method:"PUT",body:S.myEntry}).then(j=>{if(!dirty){S.myEntry=Object.assign({name:"",picks:{},bold:[],reacts:{},votes:{}},j.entry);S.entries[S.me]=S.myEntry;S.serverVotes=clone(j.entry.votes||{});}setStatus("All picks saved")}).catch(e=>{setStatus("Not saved");toast(e.status===401?"Your sign-in expired. Sign in again to save.":"That didn't save. Check your connection and try again.");if(e.status===401){saveAuth(null);S.me=null;S.readOnly=true;paint()}}).finally(()=>{saving=null});
+  await saving;
+}
+let resTimer=null,resSaving=null;
+function queueResults(){clearTimeout(resTimer);resTimer=setTimeout(async()=>{resTimer=null;if(resSaving)await resSaving;resSaving=adminOp("results",{results:clone(S.results)}).finally(()=>{resSaving=null})},400)}
+function setStatus(t){const el=$("savestatus");if(el)el.textContent=t}
+
+/* ---------- render ---------- */
+let seq=0;
+function render(){paint()}
+function paintHeader(){
+  $("season").textContent=settings().season;
+  const now=Date.now();const locks=[settings().lockAt,...S.questions.map(q=>q.lockAt)].filter(l=>l&&Date.parse(l)>now).sort((a,b)=>Date.parse(a)-Date.parse(b));
+  $("clock").innerHTML=S.status==="connecting"?"Loading…":locks.length?`<strong>Picks lock ${esc(fmt(locks[0]))}</strong><span class="num">${rel(Date.parse(locks[0])-now)} to go</span>`:`<strong>Picks are locked</strong>Now we watch.`;
+  const tabs=[["picks","My picks"],["leaders","Leaderboard"],["compare","Compare"],["bold","Bold calls"]];if(S.isOwner)tabs.push(["commish","Commish"]);
+  $("acct").innerHTML=S.me?`<span>${esc(nm(S.me))}</span><button class="linkbtn" data-act="sign-out">Sign out</button>`:(S.status==="ready"?`<button class="linkbtn" data-act="go-signin">Sign in</button>`:"");
+  $("tabs").innerHTML=tabs.map(([k,l])=>`<button class="tab" role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${l}</button>`).join("");
+}
+function paint(){
+  paintHeader();const view=$("view");
+  const active=document.activeElement&&view.contains(document.activeElement)?document.activeElement.id:null;
+  let sel=null;try{if(active)sel=[document.activeElement.selectionStart,document.activeElement.selectionEnd]}catch(e){}
+  const drafts={};view.querySelectorAll(".draft").forEach(el=>{if(el.id)drafts[el.id]=el.type==="checkbox"?el.checked:el.value});
+  let html;
+  if(S.status==="connecting")html=`<div class="empty"><strong>Warming up</strong>Your picks, the leaderboard and everyone's calls load in a moment.</div>`;
+  else if(S.status==="offline")html=`<div class="empty"><strong>League is offline</strong>Check your connection and refresh the page.</div>`;
+  else html=({picks:viewPicks,leaders:viewLeaders,compare:viewCompare,bold:viewBold,commish:viewCommish}[S.tab]||viewPicks)();
+  view.innerHTML=html;
+  for(const [id,v] of Object.entries(drafts)){const el=$(id);if(el){if(el.type==="checkbox")el.checked=v;else el.value=v}}
+  if(active&&$(active)){const el=$(active);el.focus({preventScroll:true});try{if(sel)el.setSelectionRange(sel[0],sel[1])}catch(e){}}
+}
+function groups(){const g=[];for(const q of S.questions){const n=q.group||"Extras";let x=g.find(y=>y.name===n);if(!x)g.push(x={name:n,qs:[]});x.qs.push(q)}return g}
+function steps(){
+  const p=S.myEntry.picks||{};
+  return [{id:"east",label:"East standings",done:(p.east||[]).length===15},{id:"west",label:"West standings",done:(p.west||[]).length===15},
+    ...groups().map(g=>({id:"g:"+g.name,label:g.name,done:g.qs.every(q=>has(p[q.id]))}))];
+}
+const roNote=()=>S.me?(S.myEntry.name?"":nameForm()):signinForm();
+function signinForm(){
+  if(S.linkSent)return `<div class="panel" id="signin"><h3>Check your email</h3><p class="lede">We sent a sign-in link to <strong>${esc(S.linkSent)}</strong>. Open it on this phone or computer and your picks will save here.</p><div class="actions"><button class="btn small" data-act="link-reset">Use a different email</button></div></div>`;
+  return `<div class="panel" id="signin"><h3>Sign in to make your picks</h3><p class="lede">Enter your email and we'll send you a sign-in link. No password needed. You can look around first.</p><div class="actions"><input type="email" id="signin-email" class="draft" placeholder="you@email.com" autocomplete="email" style="flex:1;min-width:200px;width:auto"><button class="btn primary" data-act="send-link">Email me a link</button></div></div>`}
+function nameForm(){return `<div class="panel"><h3>Pick your display name</h3><p class="lede">This is how you show up on the leaderboard and in Compare. Your IG handle works great.</p><div class="actions"><input type="text" id="name-input" class="draft" maxlength="24" placeholder="@yourhandle" style="flex:1;min-width:200px;width:auto"><button class="btn primary" data-act="save-name">Save name</button></div></div>`}
+
+/* ranking board, used for my picks (target me) and the commissioner's final standings (target res) */
+function ranker(conf,arr,{editable,target,actual}){
+  const key=conf==="E"?"east":"west";const placed=new Set(arr);
+  let list=`<ol class="ranks">`;
+  for(let i=0;i<15;i++){
+    if(i===0)list+=`<li class="tier">Playoffs</li>`;if(i===6)list+=`<li class="tier">Play-in</li>`;if(i===10)list+=`<li class="tier">Lottery</li>`;
+    const t=arr[i];
+    if(!t){list+=`<li class="rk empty ${i===arr.length&&editable?"next":""}"><span class="seed">${i+1}</span><span class="badge sm" style="--tb:var(--surface-2);--ta:var(--line)"></span><span class="tname">${i===arr.length&&editable?"Tap a team":""}</span><span></span></li>`;continue}
+    let tail="";
+    if(editable)tail=`<span class="rk-act"><button class="ib" data-act="rank-up" data-target="${target}" data-conf="${key}" data-i="${i}" aria-label="Move ${esc(T[t].nick)} up" ${i===0?"disabled":""}>▲</button><button class="ib" data-act="rank-down" data-target="${target}" data-conf="${key}" data-i="${i}" aria-label="Move ${esc(T[t].nick)} down" ${i===arr.length-1?"disabled":""}>▼</button><button class="ib" data-act="rank-del" data-target="${target}" data-conf="${key}" data-i="${i}" aria-label="Remove ${esc(T[t].nick)}">✕</button></span>`;
+    else if(actual&&actual.length===15){const p=rowPts(i,t,actual);const j=actual.indexOf(t)+1;tail=p===3?`<span class="pill hit">+3</span>`:p===1?`<span class="pill pts">+1 · ${j}</span>`:`<span class="pill miss">${j}</span>`}
+    list+=`<li class="rk"><span class="seed">${i+1}</span>${badge(t)}<span class="tname">${esc(T[t].city)} ${esc(T[t].nick)}</span>${tail}</li>`;
+  }
+  list+=`</ol>`;
+  if(!editable)return list;
+  const pool=TEAMS.filter(t=>t[3]===conf&&!placed.has(t[0]));
+  const poolHtml=pool.length?`<div class="pool">${pool.map(t=>`<button class="tbtn" data-act="rank-add" data-target="${target}" data-conf="${key}" data-t="${t[0]}">${badge(t[0],"lg")}<span class="nick">${esc(t[2])}</span></button>`).join("")}</div>`
+    :`<div class="empty"><strong>All 15 ranked</strong>Use the arrows to fine-tune the order.</div>`;
+  return `<div class="board"><div class="section"><h3>Tap teams in finishing order</h3>${poolHtml}${arr.length?`<div class="actions"><button class="btn small" data-act="rank-clear" data-target="${target}" data-conf="${key}">Start over</button></div>`:""}</div><div class="section"><h3>Your order</h3>${list}</div></div>`;
+}
+
+function qControl(q){
+  const v=(S.myEntry.picks||{})[q.id];const id="pick-"+q.id;
+  if(q.kind==="team"){const list=TEAMS.filter(t=>!q.conf||t[3]===q.conf);
+    return `<div class="pool">${list.map(t=>`<button class="tbtn ${v===t[0]?"on":""}" data-act="pick-team" data-q="${esc(q.id)}" data-t="${t[0]}" aria-pressed="${v===t[0]}">${badge(t[0],"lg")}<span class="nick">${esc(t[2])}</span></button>`).join("")}</div>`}
+  if(q.kind==="choice")return `<div class="seg">${(q.options||[]).map(o=>`<button class="segb ${v===o?"on":""}" data-act="pick-choice" data-q="${esc(q.id)}" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
+  if((q.kind==="player"||q.kind==="text")&&Array.isArray(q.pool)&&q.pool.length){
+    const inPool=has(v)&&q.pool.some(p=>norm(p.n)===norm(v));
+    return `<div class="cands">${q.pool.map(p=>`<button class="cand ${has(v)&&norm(v)===norm(p.n)?"on":""}" data-act="pick-choice" data-q="${esc(q.id)}" data-v="${esc(p.n)}" aria-pressed="${has(v)&&norm(v)===norm(p.n)}">${p.t?badge(p.t,"xs"):`<span class="badge xs blank"></span>`}<span>${esc(p.n)}</span></button>`).join("")}</div>
+    <label class="other" for="${id}">Someone else?<input type="text" id="${id}" data-pick="${esc(q.id)}" value="${inPool?"":esc(v??"")}" maxlength="60" placeholder="Type a name" autocomplete="off"></label>`;
+  }
+  if(q.kind==="number")return `<input type="number" inputmode="decimal" step="any" id="${id}" data-pick="${esc(q.id)}" value="${esc(v??"")}" placeholder="Your number" aria-label="${esc(q.title)}">`;
+  return `<input type="text" id="${id}" data-pick="${esc(q.id)}" value="${esc(v??"")}" maxlength="60" ${q.kind==="player"?`list="players" placeholder="Start typing a name"`:`placeholder="Your answer"`} autocomplete="off" aria-label="${esc(q.title)}">`;
+}
+function qCard(q){
+  const v=(S.myEntry.picks||{})[q.id];const locked=isLocked(q)||S.readOnly;const r=qResult(q,S.me);
+  let status=isLocked(q)?`<span class="pill lock">Locked</span>`:`<span class="pill open">Open</span>`;
+  if(q.resolved)status=r==="hit"?`<span class="pill hit">Called it · +${q.points}</span>`:r==="miss"?`<span class="pill miss">Missed</span>`:`<span class="pill lock">No pick</span>`;
+  const body=locked||q.resolved?`<div class="mypick">${has(v)?pickBadge(q,v):""}<span>${has(v)?esc(label(q,v)):"No pick"} <small>· your pick</small></span></div>`:qControl(q);
+  const ans=q.resolved?`<div class="hint">Answer: <strong>${esc((q.answers||[]).map(a=>label(q,a)).join(" / "))}</strong></div>`:"";
+  return `<div class="qcard"><div class="qhead"><div class="q-title">${esc(q.title)}</div><div class="q-meta"><span class="pill pts num">${q.points} pts</span>${status}${q.kind==="number"&&!q.resolved?"<span>Closest wins</span>":""}</div></div>${q.hint?`<div class="hint">${esc(q.hint)}</div>`:""}${body}${ans}</div>`;
+}
+function viewPicks(){
+  const st=steps();if(!st.find(s=>s.id===S.step))S.step="east";
+  const idx=st.findIndex(s=>s.id===S.step);const cur=st[idx];const next=st[idx+1];
+  let h=`<div class="section"><nav class="steps" aria-label="Pick sections">${st.map((s,i)=>`<button class="step ${s.done?"done":""}" data-act="step" data-s="${esc(s.id)}" aria-current="${s.id===S.step}"><span class="dot">${s.done?"✓":i+1}</span>${esc(s.label)}</button>`).join("")}</nav>${roNote()}</div>`;
+  if(S.step==="east"||S.step==="west"){
+    const conf=S.step==="east"?"E":"W";const arr=(S.myEntry.picks||{})[S.step]||[];const editable=!standLocked()&&!S.readOnly;
+    h+=`<div class="section"><div class="sectionhead"><div><h2>${CONF[conf]} standings</h2><p class="lede">${editable?`Rank all 15 teams from first to last. Exact spot is 3 points, one spot off is 1.`:standLocked()?`Locked. Exact spot is 3 points, one spot off is 1.`:`Sign in above to rank all 15 teams. Exact spot is 3 points, one spot off is 1.`}</p></div><span class="status num">${arr.length} of 15 · <span id="savestatus">${S.readOnly?"View only":editable?"Saves as you go":"Locked"}</span></span></div>
+      ${ranker(conf,arr,{editable,target:"me",actual:S.results.final?S.results[S.step]:null})}</div>`;
+  }else{
+    const g=groups().find(x=>"g:"+x.name===S.step);
+    h+=`<div class="section"><div class="sectionhead"><h2>${esc(g.name)}</h2><span class="status" id="savestatus">${S.readOnly?"View only":"Saves as you go"}</span></div><div class="list">${g.qs.map(qCard).join("")}</div></div>`;
+  }
+  h+=`<div class="nextbar"><span class="status num">${st.filter(s=>s.done).length} of ${st.length} sections done</span>${next?`<button class="btn primary" data-act="step" data-s="${esc(next.id)}">Next: ${esc(next.label)}</button>`:`<button class="btn primary" data-act="tab" data-tab="compare">See everyone's picks</button>`}</div>`;
+  return h;
+}
+function viewLeaders(){
+  const rows=score();const st=settings();
+  if(!rows.length)return `<div class="empty"><strong>No one's in yet</strong>The leaderboard fills in as people make their picks.</div>`;
+  const graded=S.questions.filter(q=>q.resolved).length;
+  let h=`<div class="section"><div><h2>Leaderboard</h2><p class="lede num">Standings score when the regular season ends. ${graded} of ${S.questions.length} award and playoff questions graded. Each league call you vote right is ${st.propPoints}, and each of your own bold calls that hits is ${st.boldPoints}.</p></div>
+  <div class="tablewrap"><table><thead><tr><th></th><th>Player</th><th class="n">Standings</th><th class="n">Picks right</th><th class="n">Votes right</th><th class="n">Bold hits</th><th class="n">Total</th></tr></thead><tbody>`;
+  let prev=null,rank=0;rows.forEach((r,i)=>{if(r.total!==prev){rank=i+1;prev=r.total}
+    h+=`<tr class="${r.id===S.me?"me":""}"><td class="rank">${rank}</td><td><span class="who">${av(r.id)}<span>${esc(nm(r.id))}</span></span></td><td class="n">${S.results.final?r.stand:"–"}</td><td class="n">${r.correct}/${r.graded}</td><td class="n">${r.votesRight}/${r.votesGraded}</td><td class="n">${r.boldHits}</td><td class="n pts">${r.total}</td></tr>`});
+  return h+`</tbody></table></div></div>`;
+}
+function viewCompare(){
+  const ids=Object.keys(S.entries).sort((a,b)=>a===S.me?-1:b===S.me?1:nm(a).localeCompare(nm(b)));
+  const tabs=[["east","East"],["west","West"],...groups().map(g=>["g:"+g.name,g.name])];
+  if(!tabs.find(t=>t[0]===S.cmp))S.cmp="east";
+  let h=`<div class="section"><div><h2>Compare</h2><p class="lede">Everyone's picks side by side. They stay hidden until they lock, so nobody can copy.</p></div><div class="seg">${tabs.map(([k,l])=>`<button class="segb ${S.cmp===k?"on":""}" data-act="cmp" data-c="${esc(k)}">${esc(l)}</button>`).join("")}</div></div>`;
+  if(!ids.length)return h+`<div class="empty"><strong>No picks yet</strong>Once people start picking, their calls line up here.</div>`;
+  const head=`<tr><th>#</th>${S.cmp.startsWith("g:")?"":(S.results.final?"<th>Final</th>":"")}${ids.map(id=>`<th><span class="who">${av(id)}<span>${esc(first(id))}</span></span></th>`).join("")}</tr>`;
+  if(S.cmp==="east"||S.cmp==="west"){
+    if(!standLocked()){const n=ids.filter(id=>((S.entries[id].picks||{})[S.cmp]||[]).length===15).length;return h+`<div class="empty"><strong>Hidden until ${esc(fmt(settings().lockAt))}</strong>${n} of ${ids.length} people have ranked all 15.</div>`}
+    const act=S.results.final?S.results[S.cmp]:null;
+    let rows="";for(let i=0;i<15;i++){
+      if(i===6||i===10)rows+=`<tr class="tierline"><td colspan="${ids.length+1+(act?1:0)}">${i===6?"Play-in":"Lottery"}</td></tr>`;
+      rows+=`<tr><td class="rank">${i+1}</td>${act?`<td class="cell"><div class="cmpcell">${badge(act[i],"xs")}</div></td>`:""}${ids.map(id=>{const t=((S.entries[id].picks||{})[S.cmp]||[])[i];if(!t)return `<td class="cell"><span class="status">–</span></td>`;const p=act?rowPts(i,t,act):null;return `<td class="cell"><div class="cmpcell ${p===3?"hit":""}">${badge(t,"xs")}<span>${esc(T[t].nick)}</span></div></td>`}).join("")}</tr>`}
+    return h+`<div class="tablewrap"><table class="cmp"><thead>${head.replace("<th>#</th>","<th>Seed</th>")}</thead><tbody>${rows}</tbody></table></div>`;
+  }
+  const g=groups().find(x=>"g:"+x.name===S.cmp);
+  let rows="";for(const q of g.qs){
+    rows+=`<tr><td><strong>${esc(q.title)}</strong>${q.resolved?`<div class="hint">${esc((q.answers||[]).map(a=>label(q,a)).join(" / "))}</div>`:""}</td>${ids.map(id=>{
+      if(!isLocked(q))return `<td class="cell"><span class="status">${has(((S.entries[id].picks||{}))[q.id])?"Picked":"–"}</span></td>`;
+      const v=(S.entries[id].picks||{})[q.id];if(!has(v))return `<td class="cell"><span class="status">–</span></td>`;const r=qResult(q,id);
+      return `<td class="cell"><div class="cmpcell ${r==="hit"?"hit":r==="miss"?"miss":""}">${q.kind==="team"?badge(v,"xs")+`<span>${esc(T[v]?T[v].nick:v)}</span>`:pickBadge(q,v)+`<span>${esc(v)}</span>`}</div></td>`}).join("")}</tr>`}
+  return h+`<div class="tablewrap"><table class="cmp"><thead><tr><th>Question</th>${ids.map(id=>`<th><span class="who">${av(id)}<span>${esc(first(id))}</span></span></th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function allBold(){const out=[];for(const [id,e] of Object.entries(S.entries))for(const b of (e.bold||[]))out.push({...b,uid:id,key:id+":"+b.id});return out.sort((a,b)=>Date.parse(b.at)-Date.parse(a.at))}
+function reactCounts(key){let real=0,cap=0;for(const e of Object.values(S.entries)){const r=(e.reacts||{})[key];if(r==="real")real++;else if(r==="cap")cap++}return{real,cap}}
+function propCard(pr){
+  const st=settings();const my=(S.myEntry.votes||{})[pr.id];const locked=isLocked(pr)||!!pr.result||S.readOnly;
+  const pc=S.propCounts[pr.id]||{real:0,cap:0};let real=pc.real,cap=pc.cap;const sv=(S.serverVotes||{})[pr.id];if(sv==="real")real--;if(sv==="cap")cap--;if(my==="real")real++;if(my==="cap")cap++;real=Math.max(0,real);cap=Math.max(0,cap);
+  const rn=[],cn=[];for(const [id,e] of Object.entries(S.entries)){const v=(e.votes||{})[pr.id];if(v==="real")rn.push(first(id));else if(v==="cap")cn.push(first(id))}
+  const tot=real+cap;const show=tot&&(my||isLocked(pr)||pr.result);
+  let status=pr.result==="hit"?`<span class="pill hit">It happened</span>`:pr.result==="miss"?`<span class="pill miss">Didn't happen</span>`:isLocked(pr)?`<span class="pill lock">Voting closed</span>`:`<span class="pill open">Vote by ${esc(fmt(pr.lockAt))}</span>`;
+  if(pr.result&&my){const ok=(my==="real")===(pr.result==="hit");status+=ok?`<span class="pill pts">You got it · +${st.propPoints}</span>`:`<span class="pill miss">You missed</span>`}
+  return `<div class="call">${pr.source?`<div class="src">${esc(pr.source)}</div>`:""}<div class="call-text">${esc(pr.text)}</div><div class="call-meta">${status}</div>
+  <div class="votes"><button class="vbtn real ${my==="real"?"on":""}" data-act="vote" data-p="${esc(pr.id)}" data-v="real" ${locked?"disabled":""}>Real</button><button class="vbtn cap ${my==="cap"?"on":""}" data-act="vote" data-p="${esc(pr.id)}" data-v="cap" ${locked?"disabled":""}>Cap</button></div>
+  ${show?`<div class="splitlbl num"><span class="r">Real ${real}</span><span class="c">${cap} Cap</span></div><div class="split"><div class="r" style="width:${real/tot*100}%"></div><div class="c" style="width:${cap/tot*100}%"></div></div>${isLocked(pr)||pr.result?`<div class="hint">Real: ${esc(rn.join(", ")||"nobody")} · Cap: ${esc(cn.join(", ")||"nobody")}</div>`:""}`:tot?`<div class="hint num">${tot} vote${tot===1?"":"s"} in. Vote to see the split.</div>`:""}</div>`;
+}
+function viewBold(){
+  const st=settings();const mine=(S.myEntry.bold||[]).length;const full=mine>=st.boldLimit;
+  const voted=S.props.filter(p=>(S.myEntry.votes||{})[p.id]).length;
+  let h=`<div class="section"><div class="sectionhead"><div><h2>League calls</h2><p class="lede">Big takes for the season. Vote Real if you think it happens and Cap if you don't. Every vote you get right is worth ${st.propPoints} points.</p></div><span class="status num">${voted} of ${S.props.length} voted</span></div>${roNote()}
+  ${S.props.length?`<div class="list">${S.props.map(propCard).join("")}</div>`:`<div class="empty"><strong>No league calls yet</strong>The commissioner posts these.</div>`}</div>`;
+  h+=`<div class="section"><div><h2>Your bold calls</h2><p class="lede">Your wildest takes, timestamped so you get the receipts. Each hit is worth ${st.boldPoints} points. You get ${st.boldLimit}, and you can only take one back in the first 15 minutes.</p></div>
+  <div class="panel"><label class="f" for="bold-text">Your call<textarea id="bold-text" class="draft" maxlength="140" placeholder="Example: Darryn Peterson makes the All-Star team as a rookie" ${S.readOnly||full?"disabled":""}></textarea></label>
+  <div class="actions"><button class="btn primary" data-act="bold-add" ${S.readOnly||full?"disabled":""}>Make the call</button><span class="status num">${mine} of ${st.boldLimit} used</span></div></div></div>`;
+  const calls=allBold();if(!calls.length)return h+`<div class="empty"><strong>No bold calls yet</strong>Be the first one on record.</div>`;
+  h+=`<div class="list">`;
+  for(const c of calls){const g=S.grades[c.key];const rc=reactCounts(c.key);const myR=(S.myEntry.reacts||{})[c.key];const own=c.uid===S.me;
+    const canUndo=own&&!g&&Date.now()-Date.parse(c.at)<BOLD_EDIT_MS&&!S.readOnly;
+    h+=`<div class="call"><div class="call-text">${esc(c.text)}</div><div class="call-meta"><span class="who">${av(c.uid)}<span>${esc(nm(c.uid))}</span></span><span>Called ${esc(fmtDay(c.at))}</span>
+    ${g==="hit"?`<span class="pill hit">Hit · +${st.boldPoints}</span>`:g==="miss"?`<span class="pill miss">Miss</span>`:`<span class="pill wait">Pending</span>`}
+    <button class="react ${myR==="real"?"on":""}" data-act="react" data-key="${esc(c.key)}" data-r="real" ${own||S.readOnly?"disabled":""}>Real ${rc.real||""}</button>
+    <button class="react ${myR==="cap"?"on":""}" data-act="react" data-key="${esc(c.key)}" data-r="cap" ${own||S.readOnly?"disabled":""}>Cap ${rc.cap||""}</button>
+    ${canUndo?`<button class="react" data-act="bold-del" data-id="${esc(c.id)}">Take it back</button>`:""}</div></div>`}
+  return h+`</div>`;
+}
+function viewCommish(){
+  if(!S.isOwner)return `<div class="empty"><strong>Commissioner only</strong>Only the league owner can run this tab.</div>`;
+  const st=settings();
+  let h=`<div class="section"><div><h2>Commissioner</h2><p class="lede">Post questions, set lock times and enter results. Anyone with the link can sign in with their email and play. Your commissioner access comes from the ADMIN_EMAILS setting in Netlify.</p></div>
+  <div class="panel"><h3>League</h3><div class="grid2">
+    <label class="f" for="set-season">Season name<input type="text" id="set-season" class="draft" value="${esc(st.season)}"></label>
+    <label class="f" for="set-lock">Standings lock at<input type="datetime-local" id="set-lock" class="draft" value="${toLocalInput(st.lockAt)}"></label>
+    <label class="f" for="set-limit">Bold calls per person<input type="number" id="set-limit" class="draft" min="0" value="${esc(st.boldLimit)}"></label>
+    <label class="f" for="set-bpts">Points per bold hit<input type="number" id="set-bpts" class="draft" min="0" value="${esc(st.boldPoints)}"></label>
+    <label class="f" for="set-ppts">Points per league call voted right<input type="number" id="set-ppts" class="draft" min="0" value="${esc(st.propPoints)}"></label>
+  </div><div class="actions"><button class="btn" data-act="save-settings">Save league settings</button></div></div></div>
+
+  <div class="section"><h3>Final standings</h3><p class="lede">Enter the real final order when the regular season ends, then mark it final to score everyone's standings.</p>
+  <div class="panel"><h3>East</h3>${ranker("E",S.results.east||[],{editable:true,target:"res"})}</div>
+  <div class="panel"><h3>West</h3>${ranker("W",S.results.west||[],{editable:true,target:"res"})}</div>
+  <label class="check"><input type="checkbox" data-act="res-final" ${S.results.final?"checked":""}> Final standings, count the points</label></div>
+
+  <div class="panel"><h3>Add a question</h3><div class="grid2">
+    <label class="f" for="nq-title" style="grid-column:1/-1">Question<input type="text" id="nq-title" class="draft" maxlength="90" placeholder="Example: All-Star Game MVP"></label>
+    <label class="f" for="nq-group">Section<input type="text" id="nq-group" class="draft" list="grouplist" placeholder="Extras"></label>
+    <label class="f" for="nq-kind">Answer type<select id="nq-kind" class="draft">${Object.entries(KINDS).map(([k,l])=>`<option value="${k}">${l}</option>`).join("")}</select></label>
+    <label class="f" for="nq-pts">Points<input type="number" id="nq-pts" class="draft" min="0" value="3"></label>
+    <label class="f" for="nq-lock">Locks at<input type="datetime-local" id="nq-lock" class="draft"></label>
+    <label class="f" for="nq-opts" style="grid-column:1/-1">Choices, for multiple choice (comma separated)<input type="text" id="nq-opts" class="draft" placeholder="Yes, No"></label>
+  </div><datalist id="grouplist">${[...new Set(S.questions.map(q=>q.group).filter(Boolean))].map(g=>`<option value="${esc(g)}">`).join("")}</datalist>
+  <div class="actions"><button class="btn primary" data-act="add-q">Add question</button></div></div>`;
+
+  h+=`<div class="section"><h3>Questions and results</h3><div class="list">`;
+  for(const q of S.questions){
+    const picks=Object.values(S.entries).map(e=>(e.picks||{})[q.id]).filter(has);
+    h+=`<div class="qcard"><div class="qhead"><div class="q-title">${esc(q.title)}</div><div class="q-meta"><span>${esc(q.group||"Extras")}</span><span class="num">${picks.length} picks</span>${isLocked(q)?`<span class="pill lock">Locked</span>`:`<span class="pill open">Open</span>`}${q.resolved?`<span class="pill hit">Final</span>`:""}</div></div>
+    <div class="grid2"><label class="f" for="pts-${q.id}">Points<input type="number" min="0" id="pts-${q.id}" class="draft" data-qf="points" data-q="${esc(q.id)}" value="${esc(q.points)}"></label>
+    <label class="f" for="lock-${q.id}">Locks at<input type="datetime-local" id="lock-${q.id}" class="draft" data-qf="lockAt" data-q="${esc(q.id)}" value="${toLocalInput(q.lockAt)}"></label></div>`;
+    if(q.kind==="number")h+=`<label class="f" for="num-${q.id}">Actual result<input type="number" step="any" id="num-${q.id}" class="draft" data-numans="${esc(q.id)}" value="${esc((q.answers||[])[0]??"")}" style="max-width:240px"></label>`;
+    else{
+      const vals={};for(const v of picks)vals[norm(v)]=vals[norm(v)]||v;for(const a of (q.answers||[]))vals[norm(a)]=vals[norm(a)]||a;const ok=new Set((q.answers||[]).map(norm));
+      h+=`<div class="hint">Tap every answer that should count. Accept spelling variants too.</div><div class="chips">${Object.values(vals).map(v=>`<button class="chip ${ok.has(norm(v))?"on":""}" data-act="toggle-ans" data-q="${esc(q.id)}" data-v="${esc(v)}">${esc(label(q,v))}</button>`).join("")||`<span class="status">No picks yet.</span>`}</div>
+      <div class="actions">${q.kind==="team"?`<select id="add-${q.id}" class="draft" style="width:auto;flex:1;min-width:0"><option value="">Add a team…</option>${TEAMS.map(t=>`<option value="${t[0]}">${esc(t[1]+" "+t[2])}</option>`).join("")}</select>`:q.kind==="choice"?`<select id="add-${q.id}" class="draft" style="width:auto;flex:1;min-width:0"><option value="">Add a choice…</option>${(q.options||[]).map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join("")}</select>`:`<input type="text" id="add-${q.id}" class="draft" placeholder="Add the right answer" list="players" style="flex:1;min-width:0">`}<button class="btn small" data-act="add-ans" data-q="${esc(q.id)}">Add answer</button></div>`;
+    }
+    h+=`<div class="actions"><label class="check"><input type="checkbox" data-act="final" data-q="${esc(q.id)}" ${q.resolved?"checked":""}> Final, count the points</label>${isLocked(q)?"":`<button class="btn small" data-act="lock-now" data-q="${esc(q.id)}">Lock now</button>`}<button class="btn small danger ${S.armed===q.id?"armed":""}" data-act="del-q" data-q="${esc(q.id)}">${S.armed===q.id?"Tap again to delete":"Delete"}</button></div></div>`;
+  }
+  h+=`</div></div><div class="section"><h3>League calls</h3>
+  <div class="panel"><div class="grid2"><label class="f" for="np-text" style="grid-column:1/-1">The call<input type="text" id="np-text" class="draft" maxlength="140" placeholder="Example: Wemby wins MVP and DPOY in the same season"></label>
+  <label class="f" for="np-src">Credit (optional)<input type="text" id="np-src" class="draft" maxlength="40" placeholder="Our group chat"></label>
+  <label class="f" for="np-lock">Voting closes<input type="datetime-local" id="np-lock" class="draft"></label></div>
+  <div class="actions"><button class="btn primary" data-act="add-prop">Post league call</button></div></div><div class="list">${S.props.map(pr=>`<div class="call"><div>${esc(pr.text)}</div><div class="call-meta"><span class="num">${Object.values(S.entries).filter(e=>(e.votes||{})[pr.id]).length} votes</span>
+  <button class="react ${pr.result==="hit"?"on":""}" data-act="prop-grade" data-p="${esc(pr.id)}" data-g="hit">Happened</button><button class="react ${pr.result==="miss"?"on":""}" data-act="prop-grade" data-p="${esc(pr.id)}" data-g="miss">Didn't happen</button>${pr.result?`<button class="react" data-act="prop-grade" data-p="${esc(pr.id)}" data-g="">Reset</button>`:""}
+  <button class="react ${S.armed===pr.id?"on":""}" data-act="del-prop" data-p="${esc(pr.id)}">${S.armed===pr.id?"Tap again to delete":"Delete"}</button></div></div>`).join("")}</div></div>
+  <div class="section"><h3>Grade bold calls</h3><div class="list">`;
+  const calls=allBold();if(!calls.length)h+=`<div class="empty">No bold calls yet.</div>`;
+  for(const c of calls){const g=S.grades[c.key];h+=`<div class="call"><div>${esc(c.text)}</div><div class="call-meta"><span>${esc(nm(c.uid))} · ${esc(fmtDay(c.at))}</span><button class="react ${g==="hit"?"on":""}" data-act="grade" data-key="${esc(c.key)}" data-g="hit">Hit</button><button class="react ${g==="miss"?"on":""}" data-act="grade" data-key="${esc(c.key)}" data-g="miss">Miss</button>${g?`<button class="react" data-act="grade" data-key="${esc(c.key)}" data-g="">Reset</button>`:""}</div></div>`}
+  return h+`</div></div>`;
+}
+
+/* ---------- events ---------- */
+document.body.insertAdjacentHTML("beforeend",`<datalist id="players">${PLAYERS.map(p=>`<option value="${esc(p)}">`).join("")}</datalist>`);
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;S.tab=b.dataset.tab;S.armed=null;paint();window.scrollTo({top:0})});
+const view=$("view");
+function setPick(qid,val,delay){const q=S.questions.find(x=>x.id===qid);if(!q||isLocked(q)||S.readOnly)return false;S.myEntry.picks=S.myEntry.picks||{};
+  if(!has(val))delete S.myEntry.picks[qid];else S.myEntry.picks[qid]=q.kind==="number"?Number(val):String(val).trim();queueSave(delay);return true}
+view.addEventListener("input",e=>{const el=e.target;if(el.dataset.pick)setPick(el.dataset.pick,el.value,700)});
+view.addEventListener("change",async e=>{
+  const el=e.target;
+  if(el.dataset.pick){setPick(el.dataset.pick,el.value,50);paint();return}
+  if(el.dataset.qf){const f=el.dataset.qf;const v=f==="lockAt"?fromLocalInput(el.value):Number(el.value);if(v===null||(f==="points"&&!isFinite(v)))return;await qUpdate(el.dataset.q,{[f]:v});return}
+  if(el.dataset.numans){await qUpdate(el.dataset.numans,{answers:el.value===""?[]:[Number(el.value)]});return}
+  if(el.dataset.act==="final"){await qUpdate(el.dataset.q,{resolved:el.checked});toast(el.checked?"Points counted":"Marked as not final");return}
+  if(el.dataset.act==="res-final"){S.results.final=el.checked&&(S.results.east||[]).length===15&&(S.results.west||[]).length===15;if(el.checked&&!S.results.final){el.checked=false;toast("Rank all 30 teams first")}queueResults();paint();return}
+});
+view.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-act]");if(!b||b.disabled||b.type==="checkbox")return;const act=b.dataset.act;
+  if(act==="step"){S.step=b.dataset.s;paint();window.scrollTo({top:0});return}
+  if(act==="tab"){S.tab=b.dataset.tab;paint();window.scrollTo({top:0});return}
+  if(act==="cmp"){S.cmp=b.dataset.c;paint();return}
+  if(act.startsWith("rank-")){
+    const target=b.dataset.target;const key=b.dataset.conf;
+    if(target==="me"&&(standLocked()||S.readOnly))return;if(target==="res"&&!S.isOwner)return;
+    const holder=target==="me"?(S.myEntry.picks=S.myEntry.picks||{}):S.results;const arr=(holder[key]=Array.isArray(holder[key])?holder[key]:[]);const i=Number(b.dataset.i);
+    if(act==="rank-add"&&arr.length<15&&!arr.includes(b.dataset.t))arr.push(b.dataset.t);
+    if(act==="rank-up"&&i>0)[arr[i-1],arr[i]]=[arr[i],arr[i-1]];
+    if(act==="rank-down"&&i<arr.length-1)[arr[i+1],arr[i]]=[arr[i],arr[i+1]];
+    if(act==="rank-del")arr.splice(i,1);
+    if(act==="rank-clear")arr.length=0;
+    if(target==="me")queueSave(400);else{if(arr.length<15)S.results.final=false;queueResults()}
+    paint();return;
+  }
+  if(act==="pick-team"||act==="pick-choice"){const q=S.questions.find(x=>x.id===b.dataset.q);const v=act==="pick-team"?b.dataset.t:b.dataset.v;const cur=(S.myEntry.picks||{})[b.dataset.q];if(setPick(b.dataset.q,cur===v?"":v,100))paint();return}
+  if(act==="bold-add"){const t=$("bold-text");const text=(t.value||"").trim();if(!text){toast("Write your call first");return}
+    S.myEntry.bold=S.myEntry.bold||[];if(S.myEntry.bold.length>=settings().boldLimit)return;
+    S.myEntry.bold.push({id:Math.random().toString(36).slice(2,10),text,at:new Date().toISOString()});t.value="";queueSave(0);paint();toast("On the record");return}
+  if(act==="bold-del"){S.myEntry.bold=(S.myEntry.bold||[]).filter(x=>x.id!==b.dataset.id);queueSave(0);paint();return}
+  if(act==="vote"){const pr=S.props.find(x=>x.id===b.dataset.p);if(!pr||isLocked(pr)||pr.result||S.readOnly)return;S.myEntry.votes=S.myEntry.votes||{};
+    if(S.myEntry.votes[pr.id]===b.dataset.v)delete S.myEntry.votes[pr.id];else S.myEntry.votes[pr.id]=b.dataset.v;queueSave(300);paint();return}
+  if(act==="react"){S.myEntry.reacts=S.myEntry.reacts||{};const k=b.dataset.key;if(S.myEntry.reacts[k]===b.dataset.r)delete S.myEntry.reacts[k];else S.myEntry.reacts[k]=b.dataset.r;queueSave(300);paint();return}
+  if(act==="send-link"){const em=($("signin-email").value||"").trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){toast("Enter a valid email");return}
+    b.disabled=true;try{await sendLink(em);S.linkSent=em;paint()}catch(e){b.disabled=false;toast(e.status===429?"Too many tries. Wait a minute and try again.":"Couldn't send the link. Try again.")}return}
+  if(act==="link-reset"){S.linkSent="";paint();return}
+  if(act==="save-name"){const v=($("name-input").value||"").trim().slice(0,24);if(!v){toast("Type a name first");return}S.myEntry.name=v;S.entries[S.me]=S.myEntry;queueSave(0);paint();toast("Name saved");return}
+  if(!S.isOwner)return;
+  if(act==="save-settings"){const body={season:$("set-season").value.trim()||"NBA Season",lockAt:fromLocalInput($("set-lock").value)||settings().lockAt,boldLimit:Math.max(0,parseInt($("set-limit").value)||0),boldPoints:Math.max(0,Number($("set-bpts").value)||0),propPoints:Math.max(0,Number($("set-ppts").value)||0)};
+    if(await adminOp("settings",{settings:body}))toast("League settings saved");return}
+  if(act==="add-q"){const title=$("nq-title").value.trim();if(!title){toast("Give the question a title");return}
+    const kind=$("nq-kind").value;const lock=fromLocalInput($("nq-lock").value)||new Date(Date.now()+86400000).toISOString();const opts=$("nq-opts").value.split(",").map(s=>s.trim()).filter(Boolean);
+    if(kind==="choice"&&opts.length<2){toast("Add at least two choices");return}
+    const body={title,group:$("nq-group").value.trim()||"Extras",kind,points:Math.max(0,Number($("nq-pts").value)||0),lockAt:lock,answers:[],resolved:false,order:Date.now()};if(kind==="choice")body.options=opts;
+    if(await adminOp("upsertQuestion",{q:body})){["nq-title","nq-opts","nq-lock"].forEach(i=>$(i).value="");toast("Question added")}return}
+  if(act==="add-prop"){const text=$("np-text").value.trim();if(!text){toast("Write the call first");return}
+    const body={text,source:$("np-src").value.trim(),lockAt:fromLocalInput($("np-lock").value)||settings().lockAt,result:"",order:Date.now()};
+    if(await adminOp("upsertProp",{p:body})){["np-text","np-src","np-lock"].forEach(i=>$(i).value="");toast("League call posted")}return}
+  if(act==="prop-grade"){await adminOp("patchProp",{id:b.dataset.p,patch:{result:b.dataset.g}});return}
+  if(act==="del-prop"){const id=b.dataset.p;if(S.armed!==id){S.armed=id;paint();return}S.armed=null;if(await adminOp("deleteProp",{id}))toast("League call deleted");return}
+  const q=S.questions.find(x=>x.id===b.dataset.q);
+  if(act==="toggle-ans"&&q){const v=b.dataset.v;const on=(q.answers||[]).some(a=>norm(a)===norm(v));await qUpdate(q.id,{answers:on?(q.answers||[]).filter(a=>norm(a)!==norm(v)):[...(q.answers||[]),v]});return}
+  if(act==="add-ans"&&q){const el=$("add-"+q.id);const v=(el.value||"").trim();if(!v)return;if(!(q.answers||[]).some(a=>norm(a)===norm(v)))await qUpdate(q.id,{answers:[...(q.answers||[]),v]});el.value="";return}
+  if(act==="lock-now"&&q){await qUpdate(q.id,{lockAt:new Date().toISOString()});toast("Locked");return}
+  if(act==="del-q"&&q){if(S.armed!==q.id){S.armed=q.id;paint();return}S.armed=null;if(await adminOp("deleteQuestion",{id:q.id}))toast("Question deleted");return}
+  if(act==="grade"){const g=clone(S.grades);if(b.dataset.g)g[b.dataset.key]=b.dataset.g;else delete g[b.dataset.key];await adminOp("grades",{grades:g});return}
+});
+async function qUpdate(id,patch){await adminOp("patchQuestion",{id,patch})}
+async function adminOp(op,payload){try{const d=await api("/api/admin",{method:"POST",body:{op,...payload}});applyLeague(d.league);paint();return true}catch(e){toast(e.status===403?"Only the commissioner can do that.":"That didn't save. Try again.");return false}}
+
+/* ---------- auth (Netlify Identity) ---------- */
+const AUTH_KEY="calledit.auth";let auth=null;try{auth=JSON.parse(localStorage.getItem(AUTH_KEY)||"null")}catch(e){}
+function saveAuth(a){auth=a;try{a?localStorage.setItem(AUTH_KEY,JSON.stringify(a)):localStorage.removeItem(AUTH_KEY)}catch(e){}}
+function tokenSet(j){saveAuth({access:j.access_token,refresh:j.refresh_token,exp:Date.now()+((j.expires_in||3600)-60)*1000})}
+async function idPost(path,body){const r=await fetch("/.netlify/identity"+path,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.msg||j.error_description||"identity error"),{status:r.status});return j}
+async function token(){if(!auth)return null;if(Date.now()<auth.exp)return auth.access;
+  try{const r=await fetch("/.netlify/identity/token",{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(auth.refresh)});if(!r.ok)throw 0;tokenSet(await r.json());return auth.access}catch(e){saveAuth(null);return null}}
+async function sendLink(email){const pw=Array.from(crypto.getRandomValues(new Uint32Array(4))).join("-")+"Aa!";
+  try{await idPost("/signup",{email,password:pw})}catch(e){if(e.status===400||e.status===422)await idPost("/recover",{email});else throw e}}
+async function handleHash(){const m=(location.hash||"").match(/^#(confirmation_token|recovery_token)=([^&]+)/);if(!m)return;history.replaceState(null,"",location.pathname+location.search);
+  const j=await idPost("/verify",{type:m[1]==="confirmation_token"?"signup":"recovery",token:decodeURIComponent(m[2])});tokenSet(j);toast("You're signed in")}
+async function api(path,opts={}){const t=await token();const r=await fetch(path,{method:opts.method||"GET",headers:{"content-type":"application/json",...(t?{authorization:"Bearer "+t}:{})},body:opts.body?JSON.stringify(opts.body):undefined});const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||"request failed"),{status:r.status});return j}
+function applyLeague(L){if(!L)return;S.settings=L.settings||{};S.questions=L.questions||[];S.props=L.props||[];if(!resTimer&&!resSaving)S.results=Object.assign({east:[],west:[],final:false},L.results||{});S.grades=L.grades||{}}
+function applyState(d){applyLeague(d.league);S.propCounts=d.propCounts||{};S.entries=d.entries||{};
+  if(d.me){S.me=d.me.id;S.isOwner=!!d.me.isAdmin;S.readOnly=false;if(!dirty&&!saving){S.myEntry=Object.assign({name:"",picks:{},bold:[],reacts:{},votes:{}},d.me.entry||{});S.serverVotes=clone(S.myEntry.votes||{})}S.entries[S.me]=S.myEntry}
+  else{S.me=null;S.isOwner=false;S.readOnly=true;if(S.tab==="commish")S.tab="picks"}
+  S.status="ready";paint()}
+async function load(){applyState(await api("/api/state"))}
+document.querySelector("header.top").addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;
+  if(b.dataset.act==="sign-out"){saveAuth(null);S.me=null;S.isOwner=false;S.readOnly=true;S.myEntry={name:"",picks:{},bold:[],reacts:{},votes:{}};S.tab="picks";load().catch(()=>paint());toast("Signed out")}
+  if(b.dataset.act==="go-signin"){S.tab="picks";paint();const el=$("signin-email");if(el){el.scrollIntoView({block:"center"});el.focus()}}});
+
+/* ---------- boot ---------- */
+const hash=(location.hash||"").slice(1);if(["picks","leaders","compare","bold","commish"].includes(hash))S.tab=hash;
+paint();setInterval(paintHeader,30000);
+(async()=>{
+  try{await handleHash()}catch(e){toast("That sign-in link expired. Request a new one.")}
+  try{await load()}catch(e){S.status="offline";paint()}
+  setInterval(()=>{if(document.visibilityState==="visible"&&!dirty&&!saving)load().catch(()=>{})},60000);
+})();
+</script>
+</body>
+</html>
