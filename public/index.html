@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Called It</title>
-<meta name="description" content="Make your NBA season calls. Rank both conferences, pick the awards, vote Real or Cap, and see who called it.">
+<meta name="description" content="Make your NBA season calls. Rank both conferences, pick the awards, vote Bucket or Brick, and see who called it.">
 <meta property="og:title" content="Called It">
 <meta property="og:description" content="Make your NBA season calls and see who was right all year.">
 <meta name="theme-color" content="#0e1838">
@@ -439,13 +439,13 @@ function propCard(pr){
   let status=pr.result==="hit"?`<span class="pill hit">It happened</span>`:pr.result==="miss"?`<span class="pill miss">Didn't happen</span>`:isLocked(pr)?`<span class="pill lock">Voting closed</span>`:`<span class="pill open">Vote by ${esc(fmt(pr.lockAt))}</span>`;
   if(pr.result&&my){const ok=(my==="real")===(pr.result==="hit");status+=ok?`<span class="pill pts">You got it · +${st.propPoints}</span>`:`<span class="pill miss">You missed</span>`}
   return `<div class="call">${pr.source?`<div class="src">${esc(pr.source)}</div>`:""}<div class="call-text">${esc(pr.text)}</div><div class="call-meta">${status}</div>
-  <div class="votes"><button class="vbtn real ${my==="real"?"on":""}" data-act="vote" data-p="${esc(pr.id)}" data-v="real" ${locked?"disabled":""}>Real</button><button class="vbtn cap ${my==="cap"?"on":""}" data-act="vote" data-p="${esc(pr.id)}" data-v="cap" ${locked?"disabled":""}>Cap</button></div>
-  ${show?`<div class="splitlbl num"><span class="r">Real ${real}</span><span class="c">${cap} Cap</span></div><div class="split"><div class="r" style="width:${real/tot*100}%"></div><div class="c" style="width:${cap/tot*100}%"></div></div>${isLocked(pr)||pr.result?`<div class="hint">Real: ${esc(rn.join(", ")||"nobody")} · Cap: ${esc(cn.join(", ")||"nobody")}</div>`:""}`:tot?`<div class="hint num">${tot} vote${tot===1?"":"s"} in. Vote to see the split.</div>`:""}</div>`;
+  <div class="votes"><button class="vbtn real ${my==="real"?"on":""}" data-act="vote" data-p="${esc(pr.id)}" data-v="real" ${locked?"disabled":""}>Bucket</button><button class="vbtn cap ${my==="cap"?"on":""}" data-act="vote" data-p="${esc(pr.id)}" data-v="cap" ${locked?"disabled":""}>Brick</button></div>
+  ${show?`<div class="splitlbl num"><span class="r">Bucket ${real}</span><span class="c">${cap} Brick</span></div><div class="split"><div class="r" style="width:${real/tot*100}%"></div><div class="c" style="width:${cap/tot*100}%"></div></div>${isLocked(pr)||pr.result?`<div class="hint">Bucket: ${esc(rn.join(", ")||"nobody")} · Brick: ${esc(cn.join(", ")||"nobody")}</div>`:""}`:tot?`<div class="hint num">${tot} vote${tot===1?"":"s"} in. Vote to see the split.</div>`:""}</div>`;
 }
 function viewBold(){
   const st=settings();const mine=(S.myEntry.bold||[]).length;const full=mine>=st.boldLimit;
   const voted=S.props.filter(p=>(S.myEntry.votes||{})[p.id]).length;
-  let h=`<div class="section"><div class="sectionhead"><div><h2>League calls</h2><p class="lede">Big takes for the season. Vote Real if you think it happens and Cap if you don't. Every vote you get right is worth ${st.propPoints} points.</p></div><span class="status num">${voted} of ${S.props.length} voted</span></div>${roNote()}
+  let h=`<div class="section"><div class="sectionhead"><div><h2>League calls</h2><p class="lede">Big takes for the season. Vote Bucket if you think it happens and Brick if you don't. Every vote you get right is worth ${st.propPoints} points.</p></div><span class="status num">${voted} of ${S.props.length} voted</span></div>${roNote()}
   ${S.props.length?`<div class="list">${S.props.map(propCard).join("")}</div>`:`<div class="empty"><strong>No league calls yet</strong>The commissioner posts these.</div>`}</div>`;
   h+=`<div class="section"><div><h2>Your bold calls</h2><p class="lede">Your wildest takes, timestamped so you get the receipts. Each hit is worth ${st.boldPoints} points. You get ${st.boldLimit}, and you can only take one back in the first 15 minutes.</p></div>
   <div class="panel"><label class="f" for="bold-text">Your call<textarea id="bold-text" class="draft" maxlength="140" placeholder="Example: Darryn Peterson makes the All-Star team as a rookie" ${S.readOnly||full?"disabled":""}></textarea></label>
@@ -456,8 +456,8 @@ function viewBold(){
     const canUndo=own&&!g&&Date.now()-Date.parse(c.at)<BOLD_EDIT_MS&&!S.readOnly;
     h+=`<div class="call"><div class="call-text">${esc(c.text)}</div><div class="call-meta"><span class="who">${av(c.uid)}<span>${esc(nm(c.uid))}</span></span><span>Called ${esc(fmtDay(c.at))}</span>
     ${g==="hit"?`<span class="pill hit">Hit · +${st.boldPoints}</span>`:g==="miss"?`<span class="pill miss">Miss</span>`:`<span class="pill wait">Pending</span>`}
-    <button class="react ${myR==="real"?"on":""}" data-act="react" data-key="${esc(c.key)}" data-r="real" ${own||S.readOnly?"disabled":""}>Real ${rc.real||""}</button>
-    <button class="react ${myR==="cap"?"on":""}" data-act="react" data-key="${esc(c.key)}" data-r="cap" ${own||S.readOnly?"disabled":""}>Cap ${rc.cap||""}</button>
+    <button class="react ${myR==="real"?"on":""}" data-act="react" data-key="${esc(c.key)}" data-r="real" ${own||S.readOnly?"disabled":""}>Bucket ${rc.real||""}</button>
+    <button class="react ${myR==="cap"?"on":""}" data-act="react" data-key="${esc(c.key)}" data-r="cap" ${own||S.readOnly?"disabled":""}>Brick ${rc.cap||""}</button>
     ${canUndo?`<button class="react" data-act="bold-del" data-id="${esc(c.id)}">Take it back</button>`:""}</div></div>`}
   return h+`</div>`;
 }

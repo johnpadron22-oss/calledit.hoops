@@ -2,7 +2,7 @@
   "name": "called-it",
   "private": true,
   "type": "module",
-  "description": "No-betting NBA prediction league. Rank the conferences, pick the awards, vote Real or Cap.",
+  "description": "No-betting NBA prediction league. Rank the conferences, pick the awards, vote Bucket or Brick.",
   "dependencies": {
     "@netlify/blobs": "11.1.3"
   }

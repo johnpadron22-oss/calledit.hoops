@@ -1,6 +1,6 @@
 # Called It
 
-A no-betting NBA prediction league. Fans rank both conferences, pick the awards, vote Real or Cap on league calls, post bold calls, and climb the leaderboard all season.
+A no-betting NBA prediction league. Fans rank both conferences, pick the awards, vote Bucket or Brick on league calls, post bold calls, and climb the leaderboard all season.
 
 Everything runs on Netlify: the page is static, three Netlify Functions save and serve picks, Netlify Blobs stores them, and Netlify Identity emails each player a sign-in link.
 
