@@ -311,7 +311,7 @@ function paintHeader(){
   const now=Date.now();const locks=[settings().lockAt,...S.questions.map(q=>q.lockAt)].filter(l=>l&&Date.parse(l)>now).sort((a,b)=>Date.parse(a)-Date.parse(b));
   $("clock").innerHTML=S.status==="connecting"?"Loading…":locks.length?`<strong>Picks lock ${esc(fmt(locks[0]))}</strong><span class="num">${rel(Date.parse(locks[0])-now)} to go</span>`:`<strong>Picks are locked</strong>Now we watch.`;
   const tabs=[["picks","My picks"],["leaders","Leaderboard"],["compare","Compare"],["bold","Bold calls"]];if(S.isOwner)tabs.push(["commish","Commish"]);
-  $("acct").innerHTML=S.me?`<span>${esc(nm(S.me))}</span><button class="linkbtn" data-act="sign-out">Sign out</button>`:(S.status==="ready"?`<button class="linkbtn" data-act="go-signin">Sign in</button>`:"");
+  $("acct").innerHTML=S.me?`<span>${esc(nm(S.me))}</span><button class="linkbtn" data-act="edit-name">Change name</button><button class="linkbtn" data-act="sign-out">Sign out</button>`:(S.status==="ready"?`<button class="linkbtn" data-act="go-signin">Sign in</button>`:"");
   $("tabs").innerHTML=tabs.map(([k,l])=>`<button class="tab" role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${l}</button>`).join("");
 }
 function paint(){
@@ -333,11 +333,11 @@ function steps(){
   return [{id:"east",label:"East standings",done:(p.east||[]).length===15},{id:"west",label:"West standings",done:(p.west||[]).length===15},
     ...groups().map(g=>({id:"g:"+g.name,label:g.name,done:g.qs.every(q=>has(p[q.id]))}))];
 }
-const roNote=()=>S.me?(S.myEntry.name?"":nameForm()):signinForm();
+const roNote=()=>S.me?((S.myEntry.name&&!S.editingName)?"":nameForm()):signinForm();
 function signinForm(){
   if(S.linkSent)return `<div class="panel" id="signin"><h3>Check your email</h3><p class="lede">We sent a link to <strong>${esc(S.linkSent)}</strong> from no-reply@netlify.com. First time here, it's titled Confirm your signup. Coming back, it's titled Reset your password. Either link signs you straight in, no password needed. Open it on this phone or computer.</p><div class="actions"><button class="btn small" data-act="link-reset">Use a different email</button></div></div>`;
   return `<div class="panel" id="signin"><h3>Sign in to make your picks</h3><p class="lede">Enter your email and we'll send you a sign-in link. No password needed. You can look around first.</p><div class="actions"><input type="email" id="signin-email" class="draft" placeholder="you@email.com" autocomplete="email" style="flex:1;min-width:200px;width:auto"><button class="btn primary" data-act="send-link">Email me a link</button></div></div>`}
-function nameForm(){return `<div class="panel"><h3>Pick your display name</h3><p class="lede">This is how you show up on the leaderboard and in Compare. Your IG handle works great.</p><div class="actions"><input type="text" id="name-input" class="draft" maxlength="24" placeholder="@yourhandle" style="flex:1;min-width:200px;width:auto"><button class="btn primary" data-act="save-name">Save name</button></div></div>`}
+function nameForm(){const edit=!!S.myEntry.name;return `<div class="panel" id="name-panel"><h3>${edit?"Change your display name":"Pick your display name"}</h3><p class="lede">This is how you show up on the leaderboard and in Compare. Your IG handle works great. You can change it anytime.</p><div class="actions"><input type="text" id="name-input" maxlength="24" placeholder="@yourhandle" value="${esc(S.myEntry.name||"")}" style="flex:1;min-width:200px;width:auto"><button class="btn primary" data-act="save-name">Save name</button>${edit?`<button class="btn" data-act="cancel-name">Cancel</button>`:""}</div></div>`}
 
 /* ranking board, used for my picks (target me) and the commissioner's final standings (target res) */
 function ranker(conf,arr,{editable,target,actual}){
@@ -557,7 +557,8 @@ view.addEventListener("click",async e=>{
   if(act==="send-link"){const em=($("signin-email").value||"").trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){toast("Enter a valid email");return}
     b.disabled=true;try{await sendLink(em);S.linkSent=em;paint()}catch(e){b.disabled=false;toast(e.status===429?"Too many tries. Wait a minute and try again.":"Couldn't send the link. Try again.")}return}
   if(act==="link-reset"){S.linkSent="";paint();return}
-  if(act==="save-name"){const v=($("name-input").value||"").trim().slice(0,24);if(!v){toast("Type a name first");return}S.myEntry.name=v;S.entries[S.me]=S.myEntry;queueSave(0);paint();toast("Name saved");return}
+  if(act==="save-name"){const v=($("name-input").value||"").trim().slice(0,24);if(!v){toast("Type a name first");return}S.myEntry.name=v;S.editingName=false;S.entries[S.me]=S.myEntry;queueSave(0);paint();toast("Name saved");return}
+  if(act==="cancel-name"){S.editingName=false;paint();return}
   if(!S.isOwner)return;
   if(act==="save-settings"){const body={season:$("set-season").value.trim()||"NBA Season",lockAt:fromLocalInput($("set-lock").value)||settings().lockAt,boldLimit:Math.max(0,parseInt($("set-limit").value)||0),boldPoints:Math.max(0,Number($("set-bpts").value)||0),propPoints:Math.max(0,Number($("set-ppts").value)||0)};
     if(await adminOp("settings",{settings:body}))toast("League settings saved");return}
@@ -601,6 +602,7 @@ function applyState(d){applyLeague(d.league);S.propCounts=d.propCounts||{};S.ent
 async function load(){applyState(await api("/api/state"))}
 document.querySelector("header.top").addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;
   if(b.dataset.act==="sign-out"){saveAuth(null);S.me=null;S.isOwner=false;S.readOnly=true;S.myEntry={name:"",picks:{},bold:[],reacts:{},votes:{}};S.tab="picks";load().catch(()=>paint());toast("Signed out")}
+  if(b.dataset.act==="edit-name"){S.editingName=true;S.tab="picks";paint();const el=$("name-input");if(el){el.scrollIntoView({block:"center"});el.focus();el.select()}}
   if(b.dataset.act==="go-signin"){S.tab="picks";paint();const el=$("signin-email");if(el){el.scrollIntoView({block:"center"});el.focus()}}});
 
 /* ---------- boot ---------- */
