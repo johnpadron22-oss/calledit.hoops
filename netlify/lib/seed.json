@@ -680,7 +680,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 1,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "Nikola Jokic leads the league in points, rebounds and assists"
   },
   {
@@ -688,7 +687,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 2,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "Rudy Gobert breaks Wilt Chamberlain's record for best single-season field goal percentage"
   },
   {
@@ -696,7 +694,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 3,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "Cooper Flagg makes an All-NBA team"
   },
   {
@@ -704,7 +701,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 4,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "Darryn Peterson makes the All-Star team as a rookie"
   },
   {
@@ -712,7 +708,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 5,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "AJ Dybantsa is not a Rookie of the Year finalist"
   },
   {
@@ -720,7 +715,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 6,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "The Raptors make the NBA Finals"
   },
   {
@@ -728,7 +722,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 7,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "The defending champion Knicks don't get home court in the first round"
   },
   {
@@ -736,7 +729,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 8,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "The Celtics finish with the best offense in the league"
   },
   {
@@ -744,7 +736,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 9,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "The Kings finish with the worst defense in the league"
   },
   {
@@ -752,7 +743,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 10,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "The Lakers have a top 10 defense"
   },
   {
@@ -760,7 +750,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 11,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "The Rockets reach the conference finals"
   },
   {
@@ -768,7 +757,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 12,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "Paul George makes the All-Star team and Jaylen Brown doesn't"
   },
   {
@@ -776,7 +764,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 13,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "The Nets make the play-in tournament"
   },
   {
@@ -784,7 +771,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 14,
    "result": "",
-   "source": "The Ringer's bold predictions",
    "text": "Ty Lue ends up coaching the 76ers"
   },
   {
@@ -792,7 +778,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 15,
    "result": "",
-   "source": "",
    "text": "Wembanyama wins MVP and Defensive Player of the Year in the same season"
   },
   {
@@ -800,7 +785,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 16,
    "result": "",
-   "source": "",
    "text": "Giannis plays 65 or more games in his first season with the Heat"
   },
   {
@@ -808,7 +792,6 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 17,
    "result": "",
-   "source": "",
    "text": "LeBron announces this is his final season"
   },
   {
@@ -816,8 +799,203 @@
    "lockAt": "2026-11-02T00:00:00Z",
    "order": 18,
    "result": "",
-   "source": "",
    "text": "Someone scores 60 or more in a game this season"
+  },
+  {
+   "id": "p19",
+   "text": "The Mavs make the play-in tournament.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 19
+  },
+  {
+   "id": "p20",
+   "text": "Cooper Flagg and Kyrie Irving are both All-Stars.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 20
+  },
+  {
+   "id": "p21",
+   "text": "Kyrie Irving wins Comeback Player of the Year.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 21
+  },
+  {
+   "id": "p22",
+   "text": "Kyrie Irving finishes the season with the Pistons.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 22
+  },
+  {
+   "id": "p23",
+   "text": "The Thunder win 60 or more games.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 23
+  },
+  {
+   "id": "p24",
+   "text": "Luka Doncic averages 35 or more points per game.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 24
+  },
+  {
+   "id": "p25",
+   "text": "Nikola Jokic finishes outside the top three in MVP voting.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 25
+  },
+  {
+   "id": "p26",
+   "text": "Nick Nurse doesn't finish the season as 76ers coach.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 26
+  },
+  {
+   "id": "p27",
+   "text": "Jason Kidd is an NBA head coach again by season's end.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 27
+  },
+  {
+   "id": "p28",
+   "text": "Anthony Davis finishes the season with the Warriors.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 28
+  },
+  {
+   "id": "p29",
+   "text": "A No. 8 seed knocks out a No. 1 seed in the playoffs.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 29
+  },
+  {
+   "id": "p30",
+   "text": "Rudy Gobert makes three 3-pointers this season.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 30
+  },
+  {
+   "id": "p31",
+   "text": "Caleb Wilson wins the Slam Dunk Contest.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 31
+  },
+  {
+   "id": "p32",
+   "text": "The 76ers' starting five plays fewer than 20 games together.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 32
+  },
+  {
+   "id": "p33",
+   "text": "Tyrese Haliburton makes an All-NBA team.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 33
+  },
+  {
+   "id": "p34",
+   "text": "The Raptors finish with the best defense in the league.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 34
+  },
+  {
+   "id": "p35",
+   "text": "The Kings win fewer than 20 games.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 35
+  },
+  {
+   "id": "p36",
+   "text": "The Warriors win fewer than 30 games.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 36
+  },
+  {
+   "id": "p37",
+   "text": "Draymond Green gets traded.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 37
+  },
+  {
+   "id": "p38",
+   "text": "De'Aaron Fox comes off the bench for the Spurs.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 38
+  },
+  {
+   "id": "p39",
+   "text": "Collin Murray-Boyles makes an All-Defensive team.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 39
+  },
+  {
+   "id": "p40",
+   "text": "Keyonte George makes the All-Star team.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 40
+  },
+  {
+   "id": "p41",
+   "text": "The Hornets trade for a starting point guard.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 41
+  },
+  {
+   "id": "p42",
+   "text": "The Pacers get under the luxury tax.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 42
+  },
+  {
+   "id": "p43",
+   "text": "Darryn Peterson plays 75 or more games.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 43
+  },
+  {
+   "id": "p44",
+   "text": "Giannis averages more than 7 assists per game.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 44
+  },
+  {
+   "id": "p45",
+   "text": "Domantas Sabonis asks for a trade.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 45
+  },
+  {
+   "id": "p46",
+   "text": "The Magic trade Paolo Banchero or Franz Wagner.",
+   "lockAt": "2026-11-02T00:00:00Z",
+   "result": "",
+   "order": 46
   }
  ],
  "results": {

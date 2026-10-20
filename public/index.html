@@ -438,7 +438,7 @@ function propCard(pr){
   const tot=real+cap;const show=tot&&(my||isLocked(pr)||pr.result);
   let status=pr.result==="hit"?`<span class="pill hit">It happened</span>`:pr.result==="miss"?`<span class="pill miss">Didn't happen</span>`:isLocked(pr)?`<span class="pill lock">Voting closed</span>`:`<span class="pill open">Vote by ${esc(fmt(pr.lockAt))}</span>`;
   if(pr.result&&my){const ok=(my==="real")===(pr.result==="hit");status+=ok?`<span class="pill pts">You got it · +${st.propPoints}</span>`:`<span class="pill miss">You missed</span>`}
-  return `<div class="call">${pr.source?`<div class="src">${esc(pr.source)}</div>`:""}<div class="call-text">${esc(pr.text)}</div><div class="call-meta">${status}</div>
+  return `<div class="call"><div class="call-text">${esc(pr.text)}</div><div class="call-meta">${status}</div>
   <div class="votes"><button class="vbtn real ${my==="real"?"on":""}" data-act="vote" data-p="${esc(pr.id)}" data-v="real" ${locked?"disabled":""}>Bucket</button><button class="vbtn cap ${my==="cap"?"on":""}" data-act="vote" data-p="${esc(pr.id)}" data-v="cap" ${locked?"disabled":""}>Brick</button></div>
   ${show?`<div class="splitlbl num"><span class="r">Bucket ${real}</span><span class="c">${cap} Brick</span></div><div class="split"><div class="r" style="width:${real/tot*100}%"></div><div class="c" style="width:${cap/tot*100}%"></div></div>${isLocked(pr)||pr.result?`<div class="hint">Bucket: ${esc(rn.join(", ")||"nobody")} · Brick: ${esc(cn.join(", ")||"nobody")}</div>`:""}`:tot?`<div class="hint num">${tot} vote${tot===1?"":"s"} in. Vote to see the split.</div>`:""}</div>`;
 }
@@ -504,7 +504,6 @@ function viewCommish(){
   }
   h+=`</div></div><div class="section"><h3>League calls</h3>
   <div class="panel"><div class="grid2"><label class="f" for="np-text" style="grid-column:1/-1">The call<input type="text" id="np-text" class="draft" maxlength="140" placeholder="Example: Wemby wins MVP and DPOY in the same season"></label>
-  <label class="f" for="np-src">Credit (optional)<input type="text" id="np-src" class="draft" maxlength="40" placeholder="Our group chat"></label>
   <label class="f" for="np-lock">Voting closes<input type="datetime-local" id="np-lock" class="draft"></label></div>
   <div class="actions"><button class="btn primary" data-act="add-prop">Post league call</button></div></div><div class="list">${S.props.map(pr=>`<div class="call"><div>${esc(pr.text)}</div><div class="call-meta"><span class="num">${Object.values(S.entries).filter(e=>(e.votes||{})[pr.id]).length} votes</span>
   <button class="react ${pr.result==="hit"?"on":""}" data-act="prop-grade" data-p="${esc(pr.id)}" data-g="hit">Happened</button><button class="react ${pr.result==="miss"?"on":""}" data-act="prop-grade" data-p="${esc(pr.id)}" data-g="miss">Didn't happen</button>${pr.result?`<button class="react" data-act="prop-grade" data-p="${esc(pr.id)}" data-g="">Reset</button>`:""}
@@ -568,8 +567,8 @@ view.addEventListener("click",async e=>{
     const body={title,group:$("nq-group").value.trim()||"Extras",kind,points:Math.max(0,Number($("nq-pts").value)||0),lockAt:lock,answers:[],resolved:false,order:Date.now()};if(kind==="choice")body.options=opts;
     if(await adminOp("upsertQuestion",{q:body})){["nq-title","nq-opts","nq-lock"].forEach(i=>$(i).value="");toast("Question added")}return}
   if(act==="add-prop"){const text=$("np-text").value.trim();if(!text){toast("Write the call first");return}
-    const body={text,source:$("np-src").value.trim(),lockAt:fromLocalInput($("np-lock").value)||settings().lockAt,result:"",order:Date.now()};
-    if(await adminOp("upsertProp",{p:body})){["np-text","np-src","np-lock"].forEach(i=>$(i).value="");toast("League call posted")}return}
+    const body={text,lockAt:fromLocalInput($("np-lock").value)||settings().lockAt,result:"",order:Date.now()};
+    if(await adminOp("upsertProp",{p:body})){["np-text","np-lock"].forEach(i=>$(i).value="");toast("League call posted")}return}
   if(act==="prop-grade"){await adminOp("patchProp",{id:b.dataset.p,patch:{result:b.dataset.g}});return}
   if(act==="del-prop"){const id=b.dataset.p;if(S.armed!==id){S.armed=id;paint();return}S.armed=null;if(await adminOp("deleteProp",{id}))toast("League call deleted");return}
   const q=S.questions.find(x=>x.id===b.dataset.q);

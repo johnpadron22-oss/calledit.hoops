@@ -10,7 +10,19 @@ export const store = () => getStore({ name: "called-it", consistency: "strong" }
 
 export async function getDoc(name) {
   const v = await store().get("league/" + name, { type: "json" });
-  return v ?? structuredClone(seed[name]);
+  if (name !== "props") return v ?? structuredClone(seed[name]);
+  /* League calls added to the seed later still appear once props have been saved, unless the commissioner deleted them. */
+  const props = v ?? [];
+  const deleted = new Set((await store().get("league/propsDeleted", { type: "json" })) || []);
+  const have = new Set(props.map((p) => p.id));
+  for (const p of seed.props) if (!have.has(p.id) && !deleted.has(p.id)) props.push(structuredClone(p));
+  for (const p of props) delete p.source;
+  return props;
+}
+export async function markPropDeleted(id) {
+  const list = (await store().get("league/propsDeleted", { type: "json" })) || [];
+  if (!list.includes(id)) list.push(id);
+  await store().setJSON("league/propsDeleted", list);
 }
 export async function setDoc(name, value) {
   await store().setJSON("league/" + name, value);

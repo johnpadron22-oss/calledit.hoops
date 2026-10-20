@@ -1,7 +1,7 @@
-import { authUser, getDoc, getLeague, isAdmin, json, newId, setDoc } from "../lib/common.mjs";
+import { authUser, getDoc, getLeague, isAdmin, json, markPropDeleted, newId, setDoc } from "../lib/common.mjs";
 
 const Q_FIELDS = ["title", "group", "kind", "points", "lockAt", "answers", "resolved", "options", "pool", "hint", "conf", "order"];
-const P_FIELDS = ["text", "source", "lockAt", "result", "order"];
+const P_FIELDS = ["text", "lockAt", "result", "order"];
 const pick = (obj, fields) => Object.fromEntries(Object.entries(obj || {}).filter(([k]) => fields.includes(k)));
 
 /* Commissioner tools. Only emails listed in the ADMIN_EMAILS environment variable get in. */
@@ -44,7 +44,7 @@ export default async (req) => {
         const i = ps.findIndex((p) => p.id === b.id);
         if (i < 0) return json({ error: "League call not found" }, 404);
         if (b.op === "patchProp") ps[i] = { ...ps[i], ...pick(b.patch, P_FIELDS) };
-        else ps.splice(i, 1);
+        else { await markPropDeleted(ps[i].id); ps.splice(i, 1); }
       }
       await setDoc("props", ps);
       break;
