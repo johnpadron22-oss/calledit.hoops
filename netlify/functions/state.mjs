@@ -10,8 +10,9 @@ function publicView(entries, league, meId) {
   const propCounts = {};
   for (const p of league.props) propCounts[p.id] = { real: 0, cap: 0 };
   const out = {};
+  const viewerSealed = !!(meId && entries[meId] && entries[meId].sealedAt);
   for (const [id, e] of Object.entries(entries)) {
-    const mine = id === meId;
+    const mine = id === meId || (viewerSealed && !!e.sealedAt);
     const picks = {};
     for (const [k, v] of Object.entries(e.picks || {})) {
       if (k === "east" || k === "west") picks[k] = standLocked || mine ? v : (Array.isArray(v) ? v.map(() => "?") : []);
@@ -20,9 +21,9 @@ function publicView(entries, league, meId) {
     const votes = {};
     for (const [k, v] of Object.entries(e.votes || {})) {
       if (propCounts[k] && (v === "real" || v === "cap")) propCounts[k][v]++;
-      if (!pOpen.has(k) || mine) votes[k] = v;
+      if (!pOpen.has(k) || id === meId) votes[k] = v;
     }
-    out[id] = { name: e.name || "", picks, bold: e.bold || [], reacts: e.reacts || {}, votes };
+    out[id] = { name: e.name || "", sealed: !!e.sealedAt, picks, bold: e.bold || [], reacts: e.reacts || {}, votes };
   }
   return { entries: out, propCounts };
 }

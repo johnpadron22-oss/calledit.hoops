@@ -377,9 +377,11 @@ function qControl(q){
   if(q.kind==="number")return `<input type="number" inputmode="decimal" step="any" id="${id}" data-pick="${esc(q.id)}" value="${esc(v??"")}" placeholder="Your number" aria-label="${esc(q.title)}">`;
   return `<input type="text" id="${id}" data-pick="${esc(q.id)}" value="${esc(v??"")}" maxlength="60" ${q.kind==="player"?`list="players" placeholder="Start typing a name"`:`placeholder="Your answer"`} autocomplete="off" aria-label="${esc(q.title)}">`;
 }
+function sealed(){return !!(S.myEntry&&S.myEntry.sealedAt)}
+function canSee(id){return id===S.me||(sealed()&&!!(S.entries[id]||{}).sealed)}
 function qCard(q){
-  const v=(S.myEntry.picks||{})[q.id];const locked=isLocked(q)||S.readOnly;const r=qResult(q,S.me);
-  let status=isLocked(q)?`<span class="pill lock">Locked</span>`:`<span class="pill open">Open</span>`;
+  const v=(S.myEntry.picks||{})[q.id];const locked=isLocked(q)||S.readOnly||sealed();const r=qResult(q,S.me);
+  let status=isLocked(q)||sealed()?`<span class="pill lock">${sealed()&&!isLocked(q)?"Sealed":"Locked"}</span>`:`<span class="pill open">Open</span>`;
   if(q.resolved)status=r==="hit"?`<span class="pill hit">Called it · +${q.points}</span>`:r==="miss"?`<span class="pill miss">Missed</span>`:`<span class="pill lock">No pick</span>`;
   const body=locked||q.resolved?`<div class="mypick">${has(v)?pickBadge(q,v):""}<span>${has(v)?esc(label(q,v)):"No pick"} <small>· your pick</small></span></div>`:qControl(q);
   const ans=q.resolved?`<div class="hint">Answer: <strong>${esc((q.answers||[]).map(a=>label(q,a)).join(" / "))}</strong></div>`:"";
@@ -390,13 +392,14 @@ function viewPicks(){
   const idx=st.findIndex(s=>s.id===S.step);const cur=st[idx];const next=st[idx+1];
   let h=`<div class="section"><nav class="steps" aria-label="Pick sections">${st.map((s,i)=>`<button class="step ${s.done?"done":""}" data-act="step" data-s="${esc(s.id)}" aria-current="${s.id===S.step}"><span class="dot">${s.done?"✓":i+1}</span>${esc(s.label)}</button>`).join("")}</nav>${roNote()}</div>`;
   if(S.step==="east"||S.step==="west"){
-    const conf=S.step==="east"?"E":"W";const arr=(S.myEntry.picks||{})[S.step]||[];const editable=!standLocked()&&!S.readOnly;
-    h+=`<div class="section"><div class="sectionhead"><div><h2>${CONF[conf]} standings</h2><p class="lede">${editable?`Rank all 15 teams from first to last. Exact spot is 3 points, one spot off is 1.`:standLocked()?`Locked. Exact spot is 3 points, one spot off is 1.`:`Sign in above to rank all 15 teams. Exact spot is 3 points, one spot off is 1.`}</p></div><span class="status num">${arr.length} of 15 · <span id="savestatus">${S.readOnly?"View only":editable?"Saves as you go":"Locked"}</span></span></div>
+    const conf=S.step==="east"?"E":"W";const arr=(S.myEntry.picks||{})[S.step]||[];const editable=!standLocked()&&!S.readOnly&&!sealed();
+    h+=`<div class="section"><div class="sectionhead"><div><h2>${CONF[conf]} standings</h2><p class="lede">${editable?`Rank all 15 teams from first to last. Exact spot is 3 points, one spot off is 1.`:standLocked()?`Locked. Exact spot is 3 points, one spot off is 1.`:`Sign in above to rank all 15 teams. Exact spot is 3 points, one spot off is 1.`}</p></div><span class="status num">${arr.length} of 15 · <span id="savestatus">${S.readOnly?"View only":editable?"Saves as you go":sealed()&&!standLocked()?"Sealed":"Locked"}</span></span></div>
       ${ranker(conf,arr,{editable,target:"me",actual:S.results.final?S.results[S.step]:null})}</div>`;
   }else{
     const g=groups().find(x=>"g:"+x.name===S.step);
-    h+=`<div class="section"><div class="sectionhead"><h2>${esc(g.name)}</h2><span class="status" id="savestatus">${S.readOnly?"View only":"Saves as you go"}</span></div><div class="list">${g.qs.map(qCard).join("")}</div></div>`;
+    h+=`<div class="section"><div class="sectionhead"><h2>${esc(g.name)}</h2><span class="status" id="savestatus">${S.readOnly?"View only":sealed()?"Sealed":"Saves as you go"}</span></div><div class="list">${g.qs.map(qCard).join("")}</div></div>`;
   }
+  if(S.me&&!S.readOnly&&!standLocked())h+=sealed()?`<div class="panel"><strong>Your ballot is sealed.</strong><div>You can see the picks of everyone else who sealed theirs on the Compare tab.</div><div class="actions"><button class="btn" data-act="tab" data-tab="compare">Compare picks</button></div></div>`:`<div class="panel"><strong>Want to see everyone's picks now?</strong><div>Seal your ballot early. Your standings and award picks lock for good, and in return you can see the picks of everyone else who sealed theirs. Bold calls and league call votes stay open.</div><div class="actions"><button class="btn ${S.armed==="seal"?"danger armed":""}" data-act="seal">${S.armed==="seal"?"Tap again to seal for good":"Seal my ballot"}</button></div></div>`;
   h+=`<div class="nextbar"><span class="status num">${st.filter(s=>s.done).length} of ${st.length} sections done</span>${next?`<button class="btn primary" data-act="step" data-s="${esc(next.id)}">Next: ${esc(next.label)}</button>`:`<button class="btn primary" data-act="tab" data-tab="compare">See everyone's picks</button>`}</div>`;
   return h;
 }
@@ -411,14 +414,14 @@ function viewLeaders(){
   return h+`</tbody></table></div></div>`;
 }
 function viewCompare(){
-  const ids=Object.keys(S.entries).sort((a,b)=>a===S.me?-1:b===S.me?1:nm(a).localeCompare(nm(b)));
+  const ids=Object.keys(S.entries).filter(id=>standLocked()||!sealed()||canSee(id)).sort((a,b)=>a===S.me?-1:b===S.me?1:nm(a).localeCompare(nm(b)));
   const tabs=[["east","East"],["west","West"],...groups().map(g=>["g:"+g.name,g.name])];
   if(!tabs.find(t=>t[0]===S.cmp))S.cmp="east";
-  let h=`<div class="section"><div><h2>Compare</h2><p class="lede">Everyone's picks side by side. They stay hidden until they lock, so nobody can copy.</p></div><div class="seg">${tabs.map(([k,l])=>`<button class="segb ${S.cmp===k?"on":""}" data-act="cmp" data-c="${esc(k)}">${esc(l)}</button>`).join("")}</div></div>`;
+  let h=`<div class="section"><div><h2>Compare</h2><p class="lede">${standLocked()?"Everyone's picks side by side.":sealed()?"You sealed your ballot, so you can see everyone else who sealed theirs. Everyone else stays hidden until picks lock.":"Picks stay hidden until they lock so nobody can copy. Seal your ballot on the My picks tab to see everyone else who sealed theirs."}</p></div><div class="seg">${tabs.map(([k,l])=>`<button class="segb ${S.cmp===k?"on":""}" data-act="cmp" data-c="${esc(k)}">${esc(l)}</button>`).join("")}</div></div>`;
   if(!ids.length)return h+`<div class="empty"><strong>No picks yet</strong>Once people start picking, their calls line up here.</div>`;
   const head=`<tr><th>#</th>${S.cmp.startsWith("g:")?"":(S.results.final?"<th>Final</th>":"")}${ids.map(id=>`<th><span class="who">${av(id)}<span>${esc(first(id))}</span></span></th>`).join("")}</tr>`;
   if(S.cmp==="east"||S.cmp==="west"){
-    if(!standLocked()){const n=ids.filter(id=>((S.entries[id].picks||{})[S.cmp]||[]).length===15).length;return h+`<div class="empty"><strong>Hidden until ${esc(fmt(settings().lockAt))}</strong>${n} of ${ids.length} people have ranked all 15.</div>`}
+    if(!standLocked()&&!sealed()){const n=ids.filter(id=>((S.entries[id].picks||{})[S.cmp]||[]).length===15).length;return h+`<div class="empty"><strong>Hidden until ${esc(fmt(settings().lockAt))}</strong>${n} of ${ids.length} people have ranked all 15.</div>`}
     const act=S.results.final?S.results[S.cmp]:null;
     let rows="";for(let i=0;i<15;i++){
       if(i===6||i===10)rows+=`<tr class="tierline"><td colspan="${ids.length+1+(act?1:0)}">${i===6?"Play-in":"Lottery"}</td></tr>`;
@@ -428,7 +431,7 @@ function viewCompare(){
   const g=groups().find(x=>"g:"+x.name===S.cmp);
   let rows="";for(const q of g.qs){
     rows+=`<tr><td><strong>${esc(q.title)}</strong>${q.resolved?`<div class="hint">${esc((q.answers||[]).map(a=>label(q,a)).join(" / "))}</div>`:""}</td>${ids.map(id=>{
-      if(!isLocked(q))return `<td class="cell"><span class="status">${has(((S.entries[id].picks||{}))[q.id])?"Picked":"–"}</span></td>`;
+      if(!isLocked(q)&&!canSee(id))return `<td class="cell"><span class="status">${has(((S.entries[id].picks||{}))[q.id])?"Picked":"–"}</span></td>`;
       const v=(S.entries[id].picks||{})[q.id];if(!has(v))return `<td class="cell"><span class="status">–</span></td>`;const r=qResult(q,id);
       return `<td class="cell"><div class="cmpcell ${r==="hit"?"hit":r==="miss"?"miss":""}">${q.kind==="team"?badge(v,"xs")+`<span>${esc(T[v]?T[v].nick:v)}</span>`:pickBadge(q,v)+`<span>${esc(v)}</span>`}</div></td>`}).join("")}</tr>`}
   return h+`<div class="tablewrap"><table class="cmp"><thead><tr><th>Question</th>${ids.map(id=>`<th><span class="who">${av(id)}<span>${esc(first(id))}</span></span></th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
@@ -558,7 +561,7 @@ agPoll();
 document.body.insertAdjacentHTML("beforeend",`<datalist id="players">${PLAYERS.map(p=>`<option value="${esc(p)}">`).join("")}</datalist>`);
 $("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;S.tab=b.dataset.tab;S.armed=null;if(S.tab==="agora")agLoad();paint();window.scrollTo({top:0})});
 const view=$("view");
-function setPick(qid,val,delay){const q=S.questions.find(x=>x.id===qid);if(!q||isLocked(q)||S.readOnly)return false;S.myEntry.picks=S.myEntry.picks||{};
+function setPick(qid,val,delay){const q=S.questions.find(x=>x.id===qid);if(!q||isLocked(q)||S.readOnly||sealed())return false;S.myEntry.picks=S.myEntry.picks||{};
   if(!has(val))delete S.myEntry.picks[qid];else S.myEntry.picks[qid]=q.kind==="number"?Number(val):String(val).trim();queueSave(delay);return true}
 view.addEventListener("input",e=>{const el=e.target;if(el.dataset.pick)setPick(el.dataset.pick,el.value,700)});
 view.addEventListener("change",async e=>{
@@ -572,12 +575,14 @@ view.addEventListener("change",async e=>{
 view.addEventListener("click",async e=>{
   const b=e.target.closest("[data-act]");if(!b||b.disabled||b.type==="checkbox")return;const act=b.dataset.act;
   if(act.startsWith("ag-")){await agAct(b);return}
+  if(act==="seal"){if(sealed()||S.readOnly)return;if(S.armed!=="seal"){S.armed="seal";paint();return}
+    S.armed=null;S.myEntry.seal=true;S.myEntry.sealedAt=new Date().toISOString();queueSave(0);paint();toast("Ballot sealed. Check the Compare tab.");setTimeout(()=>load().then(paint).catch(()=>{}),2500);return}
   if(act==="step"){S.step=b.dataset.s;paint();window.scrollTo({top:0});return}
   if(act==="tab"){S.tab=b.dataset.tab;paint();window.scrollTo({top:0});return}
   if(act==="cmp"){S.cmp=b.dataset.c;paint();return}
   if(act.startsWith("rank-")){
     const target=b.dataset.target;const key=b.dataset.conf;
-    if(target==="me"&&(standLocked()||S.readOnly))return;if(target==="res"&&!S.isOwner)return;
+    if(target==="me"&&(standLocked()||S.readOnly||sealed()))return;if(target==="res"&&!S.isOwner)return;
     const holder=target==="me"?(S.myEntry.picks=S.myEntry.picks||{}):S.results;const arr=(holder[key]=Array.isArray(holder[key])?holder[key]:[]);const i=Number(b.dataset.i);
     if(act==="rank-add"&&arr.length<15&&!arr.includes(b.dataset.t))arr.push(b.dataset.t);
     if(act==="rank-up"&&i>0)[arr[i-1],arr[i]]=[arr[i],arr[i-1]];

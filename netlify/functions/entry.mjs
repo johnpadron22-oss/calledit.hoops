@@ -24,13 +24,17 @@ export default async (req) => {
   const now = Date.now();
   const st = league.settings;
   const next = { name: str(body.name, 24) || prev.name || "", picks: {}, bold: [], reacts: {}, votes: {}, updatedAt: new Date(now).toISOString() };
+  /* A sealed ballot is locked early by its owner, which lets them see everyone else who sealed. */
+  const sealed = !!prev.sealedAt;
+  if (sealed) next.sealedAt = prev.sealedAt;
+  else if (body.seal === true) next.sealedAt = new Date(now).toISOString();
 
-  const standLocked = isLocked(st.lockAt, now);
+  const standLocked = isLocked(st.lockAt, now) || sealed;
   for (const [k, conf] of [["east", EAST], ["west", WEST]]) {
     next.picks[k] = standLocked ? (prev.picks?.[k] || []) : cleanRank(body.picks?.[k], conf);
   }
   for (const q of league.questions) {
-    const locked = isLocked(q.lockAt, now) || q.resolved;
+    const locked = isLocked(q.lockAt, now) || q.resolved || sealed;
     const v = locked ? prev.picks?.[q.id] : body.picks?.[q.id];
     if (v === undefined || v === null || v === "") continue;
     if (q.kind === "number") { const n = Number(v); if (Number.isFinite(n)) next.picks[q.id] = n; }
