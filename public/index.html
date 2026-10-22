@@ -174,6 +174,10 @@ tr.tierline td{padding:4px 10px; font-size:11px; font-weight:700; letter-spacing
 .call-text{font-size:19px; line-height:1.35; font-weight:700}
 .call-meta{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; font-size:13px; color:var(--ink-2)}
 .react{appearance:none; border:1px solid var(--line); background:var(--surface); border-radius:999px; min-height:32px; padding:2px 12px; font-size:13px; font-weight:700; cursor:pointer}
+.post-head{display:flex; flex-wrap:wrap; gap:6px 10px; align-items:baseline; font-size:13px; color:var(--ink-2)}
+.post-head strong{color:var(--ink); font-size:15px}
+.post-text{white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.5}
+.tagpill{display:inline-block; border-radius:999px; padding:1px 9px; font-size:12px; font-weight:700; color:#fff}
 .react.on{border-color:var(--accent); background:var(--accent-soft); color:var(--accent)}
 .react:disabled{cursor:default; opacity:.6}
 .split{display:flex; height:10px; border-radius:999px; overflow:hidden; background:var(--surface-2)}
@@ -310,7 +314,7 @@ function paintHeader(){
   $("season").textContent=settings().season;
   const now=Date.now();const locks=[settings().lockAt,...S.questions.map(q=>q.lockAt)].filter(l=>l&&Date.parse(l)>now).sort((a,b)=>Date.parse(a)-Date.parse(b));
   $("clock").innerHTML=S.status==="connecting"?"Loading…":locks.length?`<strong>Picks lock ${esc(fmt(locks[0]))}</strong><span class="num">${rel(Date.parse(locks[0])-now)} to go</span>`:`<strong>Picks are locked</strong>Now we watch.`;
-  const tabs=[["picks","My picks"],["leaders","Leaderboard"],["compare","Compare"],["bold","Bold calls"]];if(S.isOwner)tabs.push(["commish","Commish"]);
+  const tabs=[["picks","My picks"],["leaders","Leaderboard"],["compare","Compare"],["bold","Bold calls"],["agora","The Agora"]];if(S.isOwner)tabs.push(["commish","Commish"]);
   $("acct").innerHTML=S.me?`<span>${esc(nm(S.me))}</span><button class="linkbtn" data-act="edit-name">Change name</button><button class="linkbtn" data-act="sign-out">Sign out</button>`:(S.status==="ready"?`<button class="linkbtn" data-act="go-signin">Sign in</button>`:"");
   $("tabs").innerHTML=tabs.map(([k,l])=>`<button class="tab" role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${l}</button>`).join("");
 }
@@ -322,7 +326,7 @@ function paint(){
   let html;
   if(S.status==="connecting")html=`<div class="empty"><strong>Warming up</strong>Your picks, the leaderboard and everyone's calls load in a moment.</div>`;
   else if(S.status==="offline")html=`<div class="empty"><strong>League is offline</strong>Check your connection and refresh the page.</div>`;
-  else html=({picks:viewPicks,leaders:viewLeaders,compare:viewCompare,bold:viewBold,commish:viewCommish}[S.tab]||viewPicks)();
+  else html=({picks:viewPicks,leaders:viewLeaders,compare:viewCompare,bold:viewBold,agora:viewAgora,commish:viewCommish}[S.tab]||viewPicks)();
   view.innerHTML=html;
   for(const [id,v] of Object.entries(drafts)){const el=$(id);if(el){if(el.type==="checkbox")el.checked=v;else el.value=v}}
   if(active&&$(active)){const el=$(active);el.focus({preventScroll:true});try{if(sel)el.setSelectionRange(sel[0],sel[1])}catch(e){}}
@@ -514,9 +518,45 @@ function viewCommish(){
   return h+`</div></div>`;
 }
 
+
+/* ---------- the agora ---------- */
+const AG={posts:[],loaded:false,filter:"",busy:false,canPost:false,isAdmin:false,timer:null};
+const teamOf=t=>TEAMS.find(x=>x[0]===t);
+function tagPill(t){const x=teamOf(t);return x?`<span class="tagpill" style="background:${x[4]}">${esc(x[2])}</span>`:`<span class="tagpill" style="background:#555">NBA</span>`}
+function agName(p){return (S.entries[p.uid]&&S.entries[p.uid].name)||p.name||"Fan"}
+async function agLoad(){try{const d=await api("/api/agora");AG.posts=d.posts||[];AG.canPost=d.canPost;AG.isAdmin=d.isAdmin;AG.loaded=true}catch(e){AG.loaded=true;AG.err=true}if(S.tab==="agora")paint()}
+function agPoll(){clearInterval(AG.timer);AG.timer=setInterval(()=>{if(S.tab==="agora"&&document.visibilityState==="visible"&&!(document.activeElement&&document.activeElement.id==="agora-text"))agLoad()},20000)}
+function viewAgora(){
+  if(!AG.loaded){agLoad();return `<div class="empty"><strong>Opening the Agora</strong>The conversation loads in a moment.</div>`}
+  const used=[...new Set(AG.posts.map(p=>p.tag))];
+  const list=AG.posts.filter(p=>!AG.filter||p.tag===AG.filter);
+  let h=`<div class="section"><div><h2>The Agora</h2><p class="lede">The public square of Athens was where people argued about everything. This one is for basketball. Vent about your team, hype a player, call your shot. Keep it about the game and keep it respectful.</p></div>`;
+  if(S.me){h+=`<div class="panel"><label class="f" for="agora-text">What's on your mind<textarea id="agora-text" class="draft" maxlength="500" placeholder="Example: Portland with Dame and Ja is going to be a problem."></textarea></label>
+  <div class="actions"><select id="agora-tag" class="draft" style="width:auto;flex:1;min-width:0"><option value="NBA">Whole league</option>${TEAMS.map(t=>`<option value="${t[0]}">${esc(t[1]+" "+t[2])}</option>`).join("")}</select><button class="btn primary" data-act="ag-post" ${AG.busy?"disabled":""}>Post</button></div></div>`}
+  else h+=`<div class="panel"><div>Sign in with your email to post and react. Anyone can read.</div><div class="actions"><button class="btn primary" data-act="ag-signin">Sign in</button></div></div>`;
+  if(used.length>1)h+=`<div class="chips"><button class="chip ${!AG.filter?"on":""}" data-act="ag-filter" data-t="">Everything</button>${used.map(t=>`<button class="chip ${AG.filter===t?"on":""}" data-act="ag-filter" data-t="${esc(t)}">${esc(t==="NBA"?"Whole league":(teamOf(t)||[t,t,t])[2])}</button>`).join("")}</div>`;
+  if(!list.length)h+=`<div class="empty"><strong>${AG.err?"The Agora is offline":"Quiet in here"}</strong>${AG.err?"Refresh in a moment.":"Be the first voice in the square."}</div>`;
+  else h+=`<div class="list">${list.map(p=>`<div class="call"><div class="post-head"><strong>${esc(agName(p))}</strong>${tagPill(p.tag)}<span class="num">${esc(rel(Date.now()-p.at))} ago</span></div><div class="post-text">${esc(p.text)}</div>
+  <div class="call-meta"><button class="react ${p.mine==="bucket"?"on":""}" data-act="ag-react" data-id="${esc(p.id)}" data-r="bucket" ${S.me?"":"disabled"}>Bucket <span class="num">${p.counts.bucket}</span></button><button class="react ${p.mine==="brick"?"on":""}" data-act="ag-react" data-id="${esc(p.id)}" data-r="brick" ${S.me?"":"disabled"}>Brick <span class="num">${p.counts.brick}</span></button>
+  ${(S.me&&(p.uid===S.me||AG.isAdmin))?`<button class="react ${S.armed===p.id?"on":""}" data-act="ag-del" data-id="${esc(p.id)}">${S.armed===p.id?"Tap again to remove":"Remove"}</button>`:""}</div></div>`).join("")}</div>`;
+  return h+`</div>`;
+}
+async function agAct(b){
+  const act=b.dataset.act;
+  if(act==="ag-signin"){S.tab="picks";paint();const el=$("signin-email");if(el){el.scrollIntoView({block:"center"});el.focus()}return true}
+  if(act==="ag-filter"){AG.filter=b.dataset.t;paint();return true}
+  if(act==="ag-post"){const t=$("agora-text");const text=(t.value||"").trim();if(!text){toast("Write something first");return true}
+    AG.busy=true;paint();try{const d=await api("/api/agora",{method:"POST",body:{text,tag:$("agora-tag").value}});t.value="";$("agora-text")&&($("agora-text").value="");AG.posts.unshift(d.post);toast("Posted to the Agora")}catch(e){toast(e.message)}AG.busy=false;paint();return true}
+  if(act==="ag-react"){try{const d=await api("/api/agora",{method:"POST",body:{op:"react",id:b.dataset.id,r:b.dataset.r}});const i=AG.posts.findIndex(x=>x.id===d.post.id);if(i>=0)AG.posts[i]=d.post;paint()}catch(e){toast(e.message)}return true}
+  if(act==="ag-del"){if(S.armed!==b.dataset.id){S.armed=b.dataset.id;paint();return true}
+    try{await api("/api/agora",{method:"POST",body:{op:"delete",id:b.dataset.id}});AG.posts=AG.posts.filter(x=>x.id!==b.dataset.id);S.armed=null;paint();toast("Removed")}catch(e){toast(e.message)}return true}
+  return false;
+}
+agPoll();
+
 /* ---------- events ---------- */
 document.body.insertAdjacentHTML("beforeend",`<datalist id="players">${PLAYERS.map(p=>`<option value="${esc(p)}">`).join("")}</datalist>`);
-$("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;S.tab=b.dataset.tab;S.armed=null;paint();window.scrollTo({top:0})});
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;S.tab=b.dataset.tab;S.armed=null;if(S.tab==="agora")agLoad();paint();window.scrollTo({top:0})});
 const view=$("view");
 function setPick(qid,val,delay){const q=S.questions.find(x=>x.id===qid);if(!q||isLocked(q)||S.readOnly)return false;S.myEntry.picks=S.myEntry.picks||{};
   if(!has(val))delete S.myEntry.picks[qid];else S.myEntry.picks[qid]=q.kind==="number"?Number(val):String(val).trim();queueSave(delay);return true}
@@ -531,6 +571,7 @@ view.addEventListener("change",async e=>{
 });
 view.addEventListener("click",async e=>{
   const b=e.target.closest("[data-act]");if(!b||b.disabled||b.type==="checkbox")return;const act=b.dataset.act;
+  if(act.startsWith("ag-")){await agAct(b);return}
   if(act==="step"){S.step=b.dataset.s;paint();window.scrollTo({top:0});return}
   if(act==="tab"){S.tab=b.dataset.tab;paint();window.scrollTo({top:0});return}
   if(act==="cmp"){S.cmp=b.dataset.c;paint();return}
@@ -606,7 +647,7 @@ document.querySelector("header.top").addEventListener("click",e=>{const b=e.targ
   if(b.dataset.act==="go-signin"){S.tab="picks";paint();const el=$("signin-email");if(el){el.scrollIntoView({block:"center"});el.focus()}}});
 
 /* ---------- boot ---------- */
-const hash=(location.hash||"").slice(1);if(["picks","leaders","compare","bold","commish"].includes(hash))S.tab=hash;
+const hash=(location.hash||"").slice(1);if(["picks","leaders","compare","bold","agora","commish"].includes(hash))S.tab=hash;
 paint();setInterval(paintHeader,30000);
 (async()=>{
   try{await handleHash()}catch(e){toast("That sign-in link expired. Request a new one.")}
